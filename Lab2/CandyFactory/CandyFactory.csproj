@@ -43,8 +43,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Box.cs" />
+    <Compile Include="CandyBase.cs" />
+    <Compile Include="CandyExtensions.cs" />
+    <Compile Include="CandyInventory.cs" />
+    <Compile Include="Chocolate.cs" />
+    <Compile Include="Factory.cs" />
+    <Compile Include="IInspectable.cs" />
+    <Compile Include="Lollipop.cs" />
+    <Compile Include="MixedCandy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shop.cs" />
+    <Compile Include="SpecialFactory.cs" />
+    <Compile Include="Toffee.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
