@@ -14,6 +14,8 @@ namespace CandyFactory
 			var lollipopFactory = new SpecialFactory<Lollipop>("Fruit Lollipops");
 			lollipopFactory.Add(new Lollipop("Chupa Chups", 50, 20, "Plastic"));
 
+
+
 			// ✅ общий список фабрик
 			var factories = new IFactory[] { chocolateFactory, lollipopFactory };
 

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace CandyFactory
 {
@@ -21,10 +16,10 @@ namespace CandyFactory
 
 		public override void Prepare()
 		{
-			Console.WriteLine($"Tempering and molding chocolate '{Name}' ({CocoaPercent}% cocoa)...");
+			Console.WriteLine($"Темперирование и формовка шоколада '{Name}' ({CocoaPercent}% какао)...");
 		}
 
+		public override string GetLabel() => base.GetLabel() + $" (Какао: {CocoaPercent}% )";
 
-		public override string GetLabel() => base.GetLabel() + $" (Cocoa: {CocoaPercent}% )";
 	}
 }

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace CandyFactory
 {
@@ -18,17 +13,14 @@ namespace CandyFactory
 			IsCaramelized = caramelized;
 		}
 
-
 		public override void Prepare()
 		{
-			Console.WriteLine($"Cooking toffee '{Name}' - caramelized: {IsCaramelized}...");
+			Console.WriteLine($"Готовим ириску '{Name}' - карамелизировано: {IsCaramelized}...");
 		}
-
 
 		public override bool Inspect()
 		{
-			// override interface implementation
-			return Weight <= 50; // example: toffees >50g fail inspection
+			return Weight <= 50;
 		}
 	}
 }
