@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+//17 композиция 
 
 namespace CandyFactory
 {
@@ -38,6 +36,6 @@ namespace CandyFactory
 		}
 
 
-		public override string ToString() => $"Box '{Label}' - {_contents.Count} items - Total: {TotalPrice:C}";
+		public override string ToString() => $"Коробка '{Label}' - {_contents.Count} шт. - Итого: {TotalPrice:C}";
 	}
 }

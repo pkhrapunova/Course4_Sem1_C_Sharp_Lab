@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace CandyFactory
 {
 	public abstract class CandyBase : IInspectable
@@ -44,7 +43,6 @@ namespace CandyFactory
 		}
 
 
-		// abstract member
 		public abstract void Prepare();
 		public virtual string GetLabel() => $"{Name} - {Weight}g - {Price:C}";
 
@@ -52,16 +50,15 @@ namespace CandyFactory
 		public override string ToString() => GetLabel();
 
 
-		public virtual bool Inspect() => true; // simple implementation of IInspectable
+		public virtual bool Inspect() => true;
 
 
-		// overloaded operator: combine two candies into a MixedCandy
 		public static MixedCandy operator +(CandyBase a, CandyBase b)
 		{
 			if (a == null || b == null) throw new ArgumentNullException();
 			var name = a.Name + "+" + b.Name;
 			var weight = a.Weight + b.Weight;
-			var basePrice = a._price + b._price; // use base prices (without tax) for composition
+			var basePrice = a._price + b._price;
 			return new MixedCandy(name, weight, basePrice, a, b);
 		}
 	}

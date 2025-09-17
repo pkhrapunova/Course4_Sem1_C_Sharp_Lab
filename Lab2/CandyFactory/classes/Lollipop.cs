@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+
 
 namespace CandyFactory
 {
@@ -21,7 +17,8 @@ namespace CandyFactory
 
 		public override void Prepare()
 		{
-			Console.WriteLine($"Pouring lollipop syrup for '{Name}' onto stick ({StickMaterial})...");
+			Console.WriteLine($"Заливаем сироп для леденца '{Name}' на палочку ({StickMaterial})...");
 		}
+
 	}
 }
