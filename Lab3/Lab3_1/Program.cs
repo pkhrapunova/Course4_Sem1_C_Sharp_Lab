@@ -6,47 +6,50 @@
 //17	z=func(5*x,y)-2*func(x,y-6);	f(x,y)=x+7y	g(x,y)=4x+6y
 class Program
 {
-	delegate int MyDelegate(int x, int y);
+	delegate double MyDelegate(double x, double y);
 
-	static int f(int x, int y)
-	{
-		return x + 7 * y;
-	}
+	static double f(double x, double y) => x + 7 * y;
+	static double g(double x, double y) => 4 * x + 6 * y;
 
-	static int g(int x, int y)
-	{
-		return 4 * x + 6 * y;
-	}
+	static double CalculateZ(MyDelegate func, double x, double y) =>
+		func(5 * x, y) - 2 * func(x, y - 6);
 
-	static int CalculateZ(MyDelegate func, int x, int y)
+	static double ReadDouble(string message)
 	{
-		return func(5 * x, y) - 2 * func(x, y - 6);
+		while (true)
+		{
+			Console.Write(message);
+			if (double.TryParse(Console.ReadLine(), out double value))
+				return value;
+
+			Console.WriteLine("Ошибка: нужно ввести число!");
+		}
 	}
 
 	static void Main()
 	{
-		Console.Write("Введите x: ");
-		int x = int.Parse(Console.ReadLine());
+		double x = ReadDouble("Введите x: ");
+		double y = ReadDouble("Введите y: ");
+		double choice;
+		while (true)
+		{
+			choice = ReadDouble("Выберите функцию:\n1) f\n2) g \n");
+			if (choice == 1 || choice == 2)
+				break;
 
-		Console.Write("Введите y: ");
-		int y = int.Parse(Console.ReadLine());
+			Console.WriteLine("Ошибка: нужно ввести 1 или 2!");
+		}
 
-		Console.Write("Выберите функцию (1 - f, 2 - g): ");
-		int choice = int.Parse(Console.ReadLine());
 
 		MyDelegate func;
 
 		if (choice == 1)
 			func = f;
-		else if (choice == 2)
-			func = g;
 		else
-		{
-			Console.WriteLine("Ошибка: нужно ввести 1 или 2!");
-			return;
-		}
+			func = g;
+		
 
-		int z = CalculateZ(func, x, y);
+		double z = CalculateZ(func, x, y);
 		Console.WriteLine($"z = {z}");
 	}
 }

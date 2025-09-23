@@ -1,20 +1,17 @@
 ﻿using System;
-
+/*Задание 3. Изменить задание 2, таким образом, чтобы реализация вызова
+ * метода происходила при помощи события. Также реализуйте проверку введённых
+ * данных от пользователя через конструкцию TryCatchFinally с использованием собственного типа исключения.*/
 class Program
 {
-	// Делегат для условия
-	delegate bool Condition(int value);
-
-	// Событие для вызова метода
 	static event Action<int[]> OnProcess;
 
-	// Собственное исключение
 	class InvalidChoiceException : Exception
 	{
 		public InvalidChoiceException(string message) : base(message) { }
 	}
 
-	// Метод 1: подсчёт количества элементов по условию
+	delegate bool Condition(int value);
 	static int CountElements(int[] array, Condition cond)
 	{
 		int count = 0;
@@ -25,7 +22,6 @@ class Program
 		return count;
 	}
 
-	// Метод 2: сумма элементов по условию
 	static int SumElements(int[] array, Condition cond)
 	{
 		int sum = 0;
@@ -39,7 +35,7 @@ class Program
 	static void Main()
 	{
 		int[] vector = { -5, -2, 0, 3, 7, 8, 12, -1 };
-
+		Console.WriteLine(string.Join(", ", vector));
 		try
 		{
 			Console.WriteLine("Выберите метод: ");
@@ -55,7 +51,6 @@ class Program
 
 			if (choice == 1)
 			{
-				// Подписка на событие
 				OnProcess += (arr) =>
 				{
 					int result = CountElements(arr, x => x % 2 != 0);
@@ -75,7 +70,6 @@ class Program
 				throw new InvalidChoiceException("Ошибка: нужно ввести 1 или 2!");
 			}
 
-			// Вызов события
 			OnProcess?.Invoke(vector);
 		}
 		catch (InvalidChoiceException ex)
@@ -84,7 +78,7 @@ class Program
 		}
 		finally
 		{
-			Console.WriteLine("Работа программы завершена.");
+			Console.WriteLine("Работа завершена");
 		}
 	}
 }

@@ -1,11 +1,13 @@
 ﻿using System;
-
+/*Задание 2. Дан вектор. Описать необходимые методы (по вариантам, см. ниже), которые
+ * в качестве параметров должны получать массив чисел и делегат, задающий условие для
+ * значений массива через лямбда-выражение. В зависимости от ввода с клавиатуры вызвать
+ * либо первый метод (если с клавиатуры введена цифра 1) либо  второй метод (если с клавиатуры введена 2.)
+ 1)Подсчет количества нечетных элементов вектора	2)Подсчет суммы положительных элементов вектора*/
 class Program
 {
-	// Делегат для условия
 	delegate bool Condition(int value);
 
-	// Метод 1: подсчёт количества элементов по условию
 	static int CountElements(int[] array, Condition cond)
 	{
 		int count = 0;
@@ -16,7 +18,6 @@ class Program
 		return count;
 	}
 
-	// Метод 2: сумма элементов по условию
 	static int SumElements(int[] array, Condition cond)
 	{
 		int sum = 0;
@@ -26,32 +27,33 @@ class Program
 		}
 		return sum;
 	}
+	static int ReadChoice(string message)
+	{
+		while (true)
+		{
+			Console.Write(message);
+			if (int.TryParse(Console.ReadLine(), out int value) && (value == 1 || value == 2))
+				return value;
 
+			Console.WriteLine("Ошибка: нужно ввести 1 или 2!");
+		}
+	}
 	static void Main()
 	{
-		// Пример вектора
 		int[] vector = { -5, -2, 0, 3, 7, 8, 12, -1 };
-
+		Console.WriteLine(string.Join(", ", vector));
 		Console.WriteLine("Выберите метод: ");
-		Console.WriteLine("1 - Подсчет количества нечетных элементов");
-		Console.WriteLine("2 - Подсчет суммы положительных элементов");
-		int choice = int.Parse(Console.ReadLine());
+		int choice = ReadChoice("1 - Подсчет количества нечетных элементов \n2 - Подсчет суммы положительных элементов\n");
 
 		if (choice == 1)
 		{
-			// Условие: число нечётное
 			int result = CountElements(vector, x => x % 2 != 0);
 			Console.WriteLine($"Количество нечётных элементов: {result}");
 		}
-		else if (choice == 2)
+		else 
 		{
-			// Условие: число положительное
 			int result = SumElements(vector, x => x > 0);
 			Console.WriteLine($"Сумма положительных элементов: {result}");
-		}
-		else
-		{
-			Console.WriteLine("Ошибка: нужно ввести 1 или 2!");
 		}
 	}
 }
