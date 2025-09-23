@@ -34,7 +34,7 @@ namespace Lab1._2
 					case "0":
 						return;
 					default:
-						Console.WriteLine("Неверный выбор! Нажмите любую клавишу для продолжения");
+						Console.WriteLine("Неверный выбор! Нажмите любую клавишу для продолжения...");
 						Console.ReadKey();
 						break;
 				}
@@ -64,7 +64,7 @@ namespace Lab1._2
 			{
 				Console.WriteLine($"Ошибка: {ex.Message}");
 			}
-			Console.WriteLine("Нажмите любую клавишу для продолжения");
+			Console.WriteLine("Нажмите любую клавишу для продолжения...");
 			Console.ReadKey();
 		}
 
@@ -103,7 +103,7 @@ namespace Lab1._2
 			{
 				Console.WriteLine($"Ошибка: {ex.Message}");
 			}
-			Console.WriteLine("Нажмите любую клавишу для продолжения");
+			Console.WriteLine("Нажмите любую клавишу для продолжения...");
 			Console.ReadKey();
 		}
 
@@ -198,11 +198,10 @@ namespace Lab1._2
 		}
 
 
-		static void OutputVector(params int[] vector)
+		static void OutputVector(int[] vector)
 		{
 			Console.WriteLine(string.Join(" ", vector));
 		}
-
 
 		static void InputMatrix(int[,] matrix)
 		{

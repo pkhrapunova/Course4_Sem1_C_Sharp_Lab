@@ -59,6 +59,7 @@ namespace Lab1._1
             }
         }
 
+        // Метод для безопасного ввода числа
         static double ReadDouble(string message)
         {
             double value;
