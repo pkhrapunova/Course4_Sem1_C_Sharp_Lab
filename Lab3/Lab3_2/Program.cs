@@ -13,7 +13,8 @@ class Program
 		int count = 0;
 		foreach (int elem in array)
 		{
-			if (cond(elem)) count++;
+			if (cond(elem)) 
+				count++;
 		}
 		return count;
 	}
@@ -23,7 +24,8 @@ class Program
 		int sum = 0;
 		foreach (int elem in array)
 		{
-			if (cond(elem)) sum += elem;
+			if (cond(elem))
+				sum += elem;
 		}
 		return sum;
 	}
@@ -50,7 +52,7 @@ class Program
 			int result = CountElements(vector, x => x % 2 != 0);
 			Console.WriteLine($"Количество нечётных элементов: {result}");
 		}
-		else 
+		else
 		{
 			int result = SumElements(vector, x => x > 0);
 			Console.WriteLine($"Сумма положительных элементов: {result}");

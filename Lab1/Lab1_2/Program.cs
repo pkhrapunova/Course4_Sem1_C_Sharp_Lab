@@ -101,7 +101,7 @@ internal class Program
 		{
 			Console.WriteLine($"Ошибка: {ex.Message}");
 		}
-		Console.WriteLine("Нажмите любую клавишу для продолжения...");
+		Console.WriteLine("Нажмите любую клавишу для продолжения");
 		Console.ReadKey();
 	}
 
@@ -196,10 +196,11 @@ internal class Program
 	}
 
 
-	static void OutputVector(int[] vector)
+	static void OutputVector(params int[] vector)
 	{
 		Console.WriteLine(string.Join(" ", vector));
 	}
+
 
 	static void InputMatrix(int[,] matrix)
 	{
