@@ -13,7 +13,8 @@ class Program
 		int count = 0;
 		foreach (int elem in array)
 		{
-			if (cond(elem)) count++;
+			if (cond(elem)) 
+				count++;
 		}
 		return count;
 	}
@@ -23,7 +24,8 @@ class Program
 		int sum = 0;
 		foreach (int elem in array)
 		{
-			if (cond(elem)) sum += elem;
+			if (cond(elem))
+				sum += elem;
 		}
 		return sum;
 	}
@@ -40,7 +42,9 @@ class Program
 	}
 	static void Main()
 	{
-		int[] vector = { -5, -2, 0, 3, 7, 8, 12, -1 };
+		int n = InputInt("Введите размер вектора: ");
+		int[] vector = new int[n];
+		InputVector(ref vector);
 		Console.WriteLine(string.Join(", ", vector));
 		Console.WriteLine("Выберите метод: ");
 		int choice = ReadChoice("1 - Подсчет количества нечетных элементов \n2 - Подсчет суммы положительных элементов\n");
@@ -50,10 +54,48 @@ class Program
 			int result = CountElements(vector, x => x % 2 != 0);
 			Console.WriteLine($"Количество нечётных элементов: {result}");
 		}
-		else 
+		else
 		{
 			int result = SumElements(vector, x => x > 0);
 			Console.WriteLine($"Сумма положительных элементов: {result}");
+		}
+	}
+
+	static int InputInt(string prompt)
+	{
+		int value;
+		while (true)
+		{
+			Console.Write(prompt);
+			if (int.TryParse(Console.ReadLine(), out value))
+				return value;
+			Console.WriteLine("Ошибка! Введите целое число.");
+		}
+	}
+	static void InputVector(ref int[] vector)
+	{
+		while (true)
+		{
+			Console.WriteLine($"Введите {vector.Length} элементов через пробел:");
+			string line = Console.ReadLine();
+			string[] parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+			if (parts.Length != vector.Length)
+			{
+				Console.WriteLine("Количество введенных элементов не совпадает с размером вектора. Попробуйте снова.");
+				continue;
+			}
+
+			try
+			{
+				for (int i = 0; i < vector.Length; i++)
+					vector[i] = int.Parse(parts[i]);
+				break;
+			}
+			catch
+			{
+				Console.WriteLine("Ошибка при вводе. Используйте целые числа.");
+			}
 		}
 	}
 }
