@@ -6,7 +6,6 @@ namespace CandyFactory
 	{
 		public bool IsCaramelized { get; private set; }
 
-
 		public Toffee(string name, double weight, decimal basePrice, bool caramelized)
 		: base(name, weight, basePrice)
 		{
@@ -15,7 +14,8 @@ namespace CandyFactory
 
 		public override void Prepare()
 		{
-			Console.WriteLine($"Готовим ириску '{Name}' - карамелизировано: {IsCaramelized}...");
+			// Используем protected пое _name
+			Console.WriteLine($"Готовим ириску '{_name}' - карамелизировано: {IsCaramelized}...");
 		}
 
 		public override bool Inspect()

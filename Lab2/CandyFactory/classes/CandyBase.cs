@@ -8,10 +8,16 @@ namespace CandyFactory
 		protected double _weight;
 		protected decimal _price;
 		public static decimal TaxRate { get; set; } = 0.08m;
+
 		public string Name
 		{
 			get => _name;
-			protected set => _name = value ?? throw new ArgumentNullException(nameof(value));
+			protected set
+			{
+				if (string.IsNullOrWhiteSpace(value))
+					throw new ArgumentException("Имя не может быть пустым или состоять из пробелов");
+				_name = value;
+			}
 		}
 
 		public double Weight
@@ -34,7 +40,6 @@ namespace CandyFactory
 			}
 		}
 
-
 		public CandyBase(string name, double weight, decimal basePrice)
 		{
 			Name = name;
@@ -42,16 +47,12 @@ namespace CandyFactory
 			Price = basePrice;
 		}
 
-
 		public abstract void Prepare();
 		public virtual string GetLabel() => $"{Name} - {Weight}g - {Price:C}";
 
-
 		public override string ToString() => GetLabel();
 
-
 		public virtual bool Inspect() => true;
-
 
 		public static MixedCandy operator +(CandyBase a, CandyBase b)
 		{

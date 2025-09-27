@@ -53,6 +53,18 @@ namespace CandyFactory
 			inventory.Add(lollipopFactory.GetAll().First());
 			Console.WriteLine($"Первый элемент в инвентаре: {inventory[0]}");
 
+			// Демонстрация SET в индексаторе
+			Utils.PrintHeader("Демонстрация SET в индексаторе");
+			try
+			{
+				inventory[0] = new Chocolate("Новый шоколад", 100, 80, 60);
+				Console.WriteLine($"После замены: {inventory[0]}");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Ошибка при замене: {ex.Message}");
+			}
+
 			// 10. Переопределение методов
 			Utils.PrintHeader("Подготовка конфет");
 			foreach (var candy in inventory)
@@ -77,20 +89,39 @@ namespace CandyFactory
 			Console.WriteLine(box);
 
 			// 3,4. Свойства с логикой
-			Utils.PrintHeader("Демонстрация свойств");
+			Utils.PrintHeader("Демонстрация свойств с логикой");
 			var testCandy = new Chocolate("Test", 50, 30, 60);
 			Console.WriteLine($"Цена с налогом: {testCandy.Price}");
+
+			// Демонстрация логики в set свойства Name
+			Utils.PrintHeader("Демонстрация set с логикой в свойствах");
+			try
+			{
+				// Это вызовет исключение из-за логики в set
+				// var invalidCandy = new Chocolate("   ", 50, 30, 60); // Раскомментировать для теста
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Ошибка создания конфеты с пустым именем: {ex.Message}");
+			}
 
 			// 8. Статические элементы
 			CandyBase.TaxRate = 0.1m;
 			Console.WriteLine($"Цена с новым налогом: {testCandy.Price}");
 
-			// 18. Интерфейсы
-			Utils.PrintHeader("Проверка качества");
+			// 18. Интерфейсы - полиморфное использование
+			Utils.PrintHeader("Проверка качества через интерфейс");
 			foreach (var candy in toffeeFactory.GetAll())
 			{
-				Console.WriteLine($"{candy.Name}: Проверка пройдена - {candy.Inspect()}");
+				IInspectable inspectable = candy; // Использование через интерфейс
+				Console.WriteLine($"{candy.Name}: Проверка пройдена - {inspectable.Inspect()}");
 			}
+
+			// 14. Наследование обобщений с ограничениями
+			Utils.PrintHeader("Демонстрация ограничений обобщений");
+			Console.WriteLine("SpecialFactory<T> where T : CandyBase - работает корректно");
+			// Раскомментировать для демонстрации ошибки компиляции:
+			// SpecialFactory<string> invalidFactory = new SpecialFactory<string>("Нельзя"); // Ошибка!
 
 			// 16. Агрегация (магазин использует фабрику)
 			var shop = new Shop("Сладкий мир", new Factory<CandyBase>("Основная фабрика"));
