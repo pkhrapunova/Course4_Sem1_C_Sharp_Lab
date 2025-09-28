@@ -42,41 +42,42 @@ namespace LinqBooks
 				new Author { Id = 3, Name = "Михаил Булгаков", Country = "Россия" }
 			};
 
-			Console.WriteLine("===== Книги =====");
+			Console.WriteLine("\nКниги:");
 			books.ForEach(b => Console.WriteLine(b));
-			Console.WriteLine("\n===== Авторы =====");
+			Console.WriteLine("\nАвторы:");
 			authors.ForEach(a => Console.WriteLine(a));
 
-			Console.WriteLine("\n--- 1. Книги больше 600 страниц ---");
+			Console.WriteLine("\nЗадание 1. Фильтрация по одному критерию: книги больше 600 страниц");
 			var q1 = books.Where(b => b.Pages > 600);
 			foreach (var b in q1) Console.WriteLine(b);
 
-			Console.WriteLine("\n--- 2. Книги конкретного автора и страниц меньше X ---");
+			Console.WriteLine("\nЗадание 2. Фильтрация по двум критериям: книги Достоевского и меньше заданного числа страниц");
 			Console.Write("Введите максимальное число страниц: ");
 			int maxPages = int.Parse(Console.ReadLine());
 			var q2 = books.Where(b => b.AuthorId == 2 && b.Pages < maxPages);
 			foreach (var b in q2) Console.WriteLine(b);
 
-			Console.WriteLine("\n--- 3. Сортировка книг по числу страниц ---");
+			Console.WriteLine("\nЗадание 3. Сортировка: книги по числу страниц (возрастание)");
 			var q3 = books.OrderBy(b => b.Pages);
 			foreach (var b in q3) Console.WriteLine(b);
 
-			Console.WriteLine("\n--- 4. Количество книг Толстого ---");
+			Console.WriteLine("\nЗадание 4. Размер выборки: количество книг Льва Толстого");
 			int count = books.Count(b => b.AuthorId == 1);
-			Console.WriteLine($"Количество книг: {count}");
+			Console.WriteLine($"Количество книг Толстого: {count}");
 
-			Console.WriteLine("\n--- 5. Max, Average, Sum по страницам ---");
-			Console.WriteLine("Макс: " + books.Max(b => b.Pages));
+			Console.WriteLine("\nЗадание 5. Агрегаты Max, Average, Sum по страницам");
+			Console.WriteLine("Максимум: " + books.Max(b => b.Pages));
 			Console.WriteLine("Среднее: " + books.Average(b => b.Pages));
 			Console.WriteLine("Сумма: " + books.Sum(b => b.Pages));
 
-			Console.WriteLine("\n--- 6. Использование let (возраст книги с даты выхода) ---");
+
+			Console.WriteLine("\nЗадание 6. Использование let: определить, толстая или тонкая книга");
 			var q6 = from b in books
-					 let century = (b.Pages > 700 ? "толстая" : "тонкая")
-					 select $"{b.Title} — {century} книга";
+					 let size = (b.Pages > 700 ? "толстая" : "тонкая")
+					 select $"{b.Title} — {size} книга";
 			foreach (var x in q6) Console.WriteLine(x);
 
-			Console.WriteLine("\n--- 7. Группировка книг по авторам ---");
+			Console.WriteLine("\nЗадание 7. Группировка книг по авторам");
 			var q7 = from b in books
 					 group b by b.AuthorId into gr
 					 select new { AuthorId = gr.Key, Books = gr };
@@ -86,13 +87,13 @@ namespace LinqBooks
 				foreach (var b in g.Books) Console.WriteLine("  " + b.Title);
 			}
 
-			Console.WriteLine("\n--- 8. Join: книги + авторы ---");
+			Console.WriteLine("\nЗадание 8. Join: объединение книг с авторами");
 			var q8 = from b in books
 					 join a in authors on b.AuthorId equals a.Id
 					 select $"{b.Title} — {a.Name}";
 			foreach (var x in q8) Console.WriteLine(x);
 
-			Console.WriteLine("\n--- 9. GroupJoin: авторы + их книги ---");
+			Console.WriteLine("\nЗадание 9. GroupJoin: авторы и список их книг");
 			var q9 = authors.GroupJoin(books,
 									   a => a.Id,
 									   b => b.AuthorId,
@@ -103,13 +104,13 @@ namespace LinqBooks
 				foreach (var b in g.Books) Console.WriteLine("  " + b.Title);
 			}
 
-			Console.WriteLine("\n--- 10. All: все ли книги больше 400 страниц ---");
+			Console.WriteLine("\nЗадание 10. Проверка All: все ли книги больше 400 страниц?");
 			bool allBig = books.All(b => b.Pages > 400);
-			Console.WriteLine(allBig ? "Да" : "Нет");
+			Console.WriteLine(allBig ? "Да, все больше 400" : "Нет, есть меньше 400");
 
-			Console.WriteLine("\n--- 11. Any: есть ли хотя бы одна книга Булгакова ---");
+			Console.WriteLine("\nЗадание 11. Проверка Any: есть ли хотя бы одна книга Булгакова?");
 			bool anyBulgakov = books.Any(b => b.AuthorId == 3);
-			Console.WriteLine(anyBulgakov ? "Да" : "Нет");
+			Console.WriteLine(anyBulgakov ? "Да, есть" : "Нет, нету");
 		}
 	}
 }
