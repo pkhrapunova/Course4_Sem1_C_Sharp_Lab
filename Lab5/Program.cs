@@ -30,17 +30,22 @@ namespace LinqBooks
 			{
 				new Book { Title = "Война и мир", Pages = 1225, AuthorId = 1 },
 				new Book { Title = "Преступление и наказание", Pages = 671, AuthorId = 2 },
-				new Book { Title = "Идиот", Pages = 620, AuthorId = 2 },
 				new Book { Title = "Анна Каренина", Pages = 864, AuthorId = 1 },
-				new Book { Title = "Мастер и Маргарита", Pages = 470, AuthorId = 3 }
+				new Book { Title = "Мастер и Маргарита", Pages = 470, AuthorId = 3 },
+				new Book { Title = "Белая гвардия", Pages = 510, AuthorId = 3 },
+				new Book { Title = "Евгений Онегин", Pages = 384, AuthorId = 4 },
+				new Book { Title = "Мёртвые души", Pages = 352, AuthorId = 5 }
 			};
 
 			var authors = new List<Author>
 			{
 				new Author { Id = 1, Name = "Лев Толстой", Country = "Россия" },
 				new Author { Id = 2, Name = "Фёдор Достоевский", Country = "Россия" },
-				new Author { Id = 3, Name = "Михаил Булгаков", Country = "Россия" }
+				new Author { Id = 3, Name = "Михаил Булгаков", Country = "Россия" },
+				new Author { Id = 4, Name = "Александр Пушкин", Country = "Россия" },
+				new Author { Id = 5, Name = "Николай Гоголь", Country = "Россия" }
 			};
+
 
 			Console.WriteLine("\nКниги:");
 			books.ForEach(b => Console.WriteLine(b));
@@ -55,7 +60,17 @@ namespace LinqBooks
 			Console.Write("Введите максимальное число страниц: ");
 			int maxPages = int.Parse(Console.ReadLine());
 			var q2 = books.Where(b => b.AuthorId == 2 && b.Pages < maxPages);
-			foreach (var b in q2) Console.WriteLine(b);
+
+			if (q2.Any())
+			{
+				foreach (var b in q2)
+					Console.WriteLine(b);
+			}
+			else
+			{
+				Console.WriteLine("Ничего не найдено");
+			}
+
 
 			Console.WriteLine("\nЗадание 3. Сортировка: книги по числу страниц (возрастание)");
 			var q3 = books.OrderBy(b => b.Pages);

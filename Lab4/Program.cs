@@ -94,10 +94,23 @@ namespace ConsoleApp
 
 							var students = new List<Student>
 							{
-								new Student { Name = "Иван Иванов", Group = "101", PhoneNumber = "123456789" },
-								new Student { Name = "Петр Петров", Group = "101", PhoneNumber = "987654321" },
-								new Student { Name = "Сергей Сергеев", Group = "102", PhoneNumber = "555555555" }
+								new Student { Name = "Иван Иванов", Group = "101", PhoneNumber = "+375-29-123-45-67" },
+								new Student { Name = "Мария Петрова", Group = "101", PhoneNumber = "+375-33-234-56-78" },
+								new Student { Name = "Алексей Смирнов", Group = "102", PhoneNumber = "+375-25-345-67-89" },
+								new Student { Name = "Елена Кузнецова", Group = "103", PhoneNumber = "+375-44-456-78-90" },
+								new Student { Name = "Дмитрий Федоров", Group = "102", PhoneNumber = "+375-29-567-89-01" },
+								new Student { Name = "Ольга Соколова", Group = "101", PhoneNumber = "+375-33-678-90-12" },
+								new Student { Name = "Сергей Ковалев", Group = "103", PhoneNumber = "+375-25-789-01-23" },
+								new Student { Name = "Анна Морозова", Group = "102", PhoneNumber = "+375-44-890-12-34" },
+								new Student { Name = "Николай Васильев", Group = "104", PhoneNumber = "+375-29-901-23-45" },
+								new Student { Name = "Татьяна Павлова", Group = "104", PhoneNumber = "+375-33-012-34-56" },
+								new Student { Name = "Владимир Кузьмин", Group = "103", PhoneNumber = "+375-25-123-45-67" },
+								new Student { Name = "Алина Лебедева", Group = "101", PhoneNumber = "+375-44-234-56-78" },
+								new Student { Name = "Максим Попов", Group = "102", PhoneNumber = "+375-29-345-67-89" },
+								new Student { Name = "Ирина Кравцова", Group = "104", PhoneNumber = "+375-33-456-78-90" },
+								new Student { Name = "Роман Орлов", Group = "103", PhoneNumber = "+375-25-567-89-01" }
 							};
+
 
 							CreateJsonStudentsFile(savePath, students);
 							Console.WriteLine("JSON файл успешно создан: " + saveFileName + ".json");
