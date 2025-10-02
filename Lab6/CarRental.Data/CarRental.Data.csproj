@@ -44,8 +44,10 @@
     <Reference Include="Microsoft.Analytics.Types" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CarRepository.cs" />
     <Compile Include="CustomerRepository.cs" />
     <Compile Include="IRepository.cs" />
+    <Compile Include="OrderRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

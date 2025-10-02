@@ -7,47 +7,101 @@ namespace CarRental.UI
 {
 	public partial class MainForm : Form
 	{
+		// Репозитории
 		private readonly CustomerRepository _customerRepo;
+		private readonly CarRepository _carRepo;
+		private readonly OrderRepository _orderRepo;
+
+		// DataGridView для каждой вкладки
 		private DataGridView dgvCustomers;
+		private DataGridView dgvCars;
+		private DataGridView dgvOrders;
 
 		public MainForm()
 		{
 			InitializeComponent();
+
 			_customerRepo = new CustomerRepository();
-			InitializeDataGridView(); // инициализация dgv
+			_carRepo = new CarRepository();
+			_orderRepo = new OrderRepository();
+
+			InitializeTabControl();
 		}
 
-		private void InitializeDataGridView()
+		private void InitializeTabControl()
 		{
-			dgvCustomers = new DataGridView
+			var tabControl = new TabControl
 			{
-				Location = new System.Drawing.Point(10, 10),
-				Size = new System.Drawing.Size(600, 300),
-				AutoGenerateColumns = true
+				Dock = DockStyle.Fill
 			};
-			this.Controls.Add(dgvCustomers); // добавляем на форму
+
+			// ================= Клиенты =================
+			var tabCustomers = new TabPage("Клиенты");
+			dgvCustomers = new DataGridView { Dock = DockStyle.Top, Height = 300, AutoGenerateColumns = true };
+			tabCustomers.Controls.Add(dgvCustomers);
+
+			var btnAddCustomer = new Button { Text = "Добавить", Top = 310, Left = 10 };
+			btnAddCustomer.Click += BtnAddCustomer_Click;
+			var btnEditCustomer = new Button { Text = "Изменить", Top = 310, Left = 100 };
+			var btnDeleteCustomer = new Button { Text = "Удалить", Top = 310, Left = 200 };
+			btnDeleteCustomer.Click += BtnDeleteCustomer_Click;
+
+			tabCustomers.Controls.Add(btnAddCustomer);
+			tabCustomers.Controls.Add(btnEditCustomer);
+			tabCustomers.Controls.Add(btnDeleteCustomer);
+
+			tabControl.TabPages.Add(tabCustomers);
+
+			// ================= Машины =================
+			var tabCars = new TabPage("Машины");
+			dgvCars = new DataGridView { Dock = DockStyle.Top, Height = 300, AutoGenerateColumns = true };
+			tabCars.Controls.Add(dgvCars);
+
+			var btnAddCar = new Button { Text = "Добавить", Top = 310, Left = 10 };
+			var btnEditCar = new Button { Text = "Изменить", Top = 310, Left = 100 };
+			var btnDeleteCar = new Button { Text = "Удалить", Top = 310, Left = 200 };
+			tabCars.Controls.Add(btnAddCar);
+			tabCars.Controls.Add(btnEditCar);
+			tabCars.Controls.Add(btnDeleteCar);
+
+			tabControl.TabPages.Add(tabCars);
+
+			// ================= Заказы =================
+			var tabOrders = new TabPage("Заказы");
+			dgvOrders = new DataGridView { Dock = DockStyle.Top, Height = 300, AutoGenerateColumns = true };
+			tabOrders.Controls.Add(dgvOrders);
+
+			var btnAddOrder = new Button { Text = "Добавить", Top = 310, Left = 10 };
+			var btnEditOrder = new Button { Text = "Изменить", Top = 310, Left = 100 };
+			var btnDeleteOrder = new Button { Text = "Удалить", Top = 310, Left = 200 };
+			tabOrders.Controls.Add(btnAddOrder);
+			tabOrders.Controls.Add(btnEditOrder);
+			tabOrders.Controls.Add(btnDeleteOrder);
+
+			tabControl.TabPages.Add(tabOrders);
+
+			this.Controls.Add(tabControl);
+
+			// Загрузка данных при старте
+			LoadAllData();
 		}
 
-		private void BtnLoad_Click(object sender, EventArgs e)
+		private void LoadAllData()
 		{
+			dgvCustomers.DataSource = _customerRepo.GetAll();
+			dgvCars.DataSource = _carRepo.GetAll();
+			dgvOrders.DataSource = _orderRepo.GetAll();
+		}
+
+		// ================= Обработчики кнопок =================
+		private void BtnAddCustomer_Click(object sender, EventArgs e)
+		{
+			var form = new FormAddEditCustomer(_customerRepo);
+			form.ShowDialog();
 			dgvCustomers.DataSource = _customerRepo.GetAll();
 		}
 
-		private void BtnAdd_Click(object sender, EventArgs e)
-		{
-			var c = new Customer
-			{
-				FullName = "Новый Клиент",
-				Passport = "XX000000",
-				Address = "Адрес",
-				Phone = "375291234567",
-				DrivingLicense = "BY99999"
-			};
-			_customerRepo.Insert(c);
-			dgvCustomers.DataSource = _customerRepo.GetAll();
-		}
-
-		private void BtnDelete_Click(object sender, EventArgs e)
+		private void BtnDeleteCustomer_Click(object sender, EventArgs e)
 		{
 			if (dgvCustomers.CurrentRow != null)
 			{
@@ -57,10 +111,6 @@ namespace CarRental.UI
 			}
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
-		{
-			// здесь можно сразу подгрузить данные
-			dgvCustomers.DataSource = _customerRepo.GetAll();
-		}
+		// Здесь аналогично можно добавить BtnAddCar, BtnDeleteCar, BtnAddOrder, BtnDeleteOrder и т.д.
 	}
 }
