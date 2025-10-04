@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Office.Interop.Word.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,11 +50,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormAddEditCar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAddEditCar.Designer.cs">
+      <DependentUpon>FormAddEditCar.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormAddEditCustomer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormAddEditCustomer.Designer.cs">
       <DependentUpon>FormAddEditCustomer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormAddEditOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAddEditOrder.Designer.cs">
+      <DependentUpon>FormAddEditOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormQueries.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormQueries.Designer.cs">
+      <DependentUpon>FormQueries.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -60,8 +82,18 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WordReportService.cs" />
+    <EmbeddedResource Include="FormAddEditCar.resx">
+      <DependentUpon>FormAddEditCar.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormAddEditCustomer.resx">
       <DependentUpon>FormAddEditCustomer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAddEditOrder.resx">
+      <DependentUpon>FormAddEditOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormQueries.resx">
+      <DependentUpon>FormQueries.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -75,6 +107,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

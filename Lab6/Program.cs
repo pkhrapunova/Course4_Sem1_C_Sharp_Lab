@@ -1,23 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using CarRental.UI;
 
-namespace Lab6
+namespace CarRental.UI
 {
 	internal static class Program
 	{
-		/// <summary>
-		/// Главная точка входа для приложения.
-		/// </summary>
 		[STAThread]
 		static void Main()
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+
+			// Глобальная обработка исключений
+			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+			Application.ThreadException += (s, e) =>
+				ShowError("Необработанная ошибка приложения", e.Exception);
+			AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+				ShowError("Критическая ошибка домена приложения", e.ExceptionObject as Exception);
+
+			try
+			{
+				Application.Run(new MainForm());
+			}
+			catch (Exception ex)
+			{
+				ShowError("Критическая ошибка запуска приложения", ex);
+			}
+		}
+
+		static void ShowError(string title, Exception ex)
+		{
+			string message = $"{title}:\n\n{ex?.Message}";
+
+			if (ex?.InnerException != null)
+			{
+				message += $"\n\nВнутренняя ошибка: {ex.InnerException.Message}";
+			}
+
+			MessageBox.Show(message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+			// Логирование ошибки (можно добавить запись в файл)
+			System.Diagnostics.Debug.WriteLine($"[ERROR] {DateTime.Now}: {title} - {ex}");
 		}
 	}
 }

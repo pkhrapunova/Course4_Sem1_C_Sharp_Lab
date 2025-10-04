@@ -16,6 +16,7 @@ namespace CarRental.Data
 			_connectionString = ConfigurationManager.ConnectionStrings["CarRentalDb"].ConnectionString;
 		}
 
+		// ИСПРАВЛЕНИЕ: Возвращаем IEnumerable<Customer> вместо List<Customer>
 		public IEnumerable<Customer> GetAll()
 		{
 			var customers = new List<Customer>();
@@ -104,13 +105,24 @@ namespace CarRental.Data
 
 		public void Delete(int id)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_DeleteCustomer", conn))
+			try
 			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@CustomerID", id);
-				conn.Open();
-				cmd.ExecuteNonQuery();
+				using (var conn = new SqlConnection(_connectionString))
+				using (var cmd = new SqlCommand("sp_DeleteCustomer", conn))
+				{
+					cmd.CommandType = CommandType.StoredProcedure;
+					cmd.Parameters.AddWithValue("@CustomerID", id);
+					conn.Open();
+					cmd.ExecuteNonQuery();
+				}
+			}
+			catch (SqlException ex) when (ex.Number == 547)
+			{
+				throw new Exception("Нельзя удалить этот элемент, так как он связан с другими данными в системе.");
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Ошибка при удалении: {ex.Message}", ex);
 			}
 		}
 	}
