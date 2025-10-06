@@ -48,17 +48,15 @@
     <Reference Include="Microsoft.Analytics.Types" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CarRepository.cs" />
-    <Compile Include="CustomerRepository.cs" />
-    <Compile Include="IRepository.cs" />
-    <Compile Include="OrderRepository.cs" />
+    <Compile Include="Models\ForReport.cs" />
+    <Compile Include="Repositories\CarRepository.cs" />
+    <Compile Include="Repositories\CustomerRepository.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Repositories\OrderRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CarRental.Models\CarRental.Models.csproj">
-      <Project>{4abb5849-94b8-4c6a-8328-bb7e7ef3fc05}</Project>
-      <Name>CarRental.Models</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -11,7 +11,6 @@ namespace CarRental.UI
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			// Глобальная обработка исключений
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 			Application.ThreadException += (s, e) =>
 				ShowError("Необработанная ошибка приложения", e.Exception);
@@ -39,7 +38,6 @@ namespace CarRental.UI
 
 			MessageBox.Show(message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-			// Логирование ошибки (можно добавить запись в файл)
 			System.Diagnostics.Debug.WriteLine($"[ERROR] {DateTime.Now}: {title} - {ex}");
 		}
 	}

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using CarRental.Data;
-using CarRental.Models;
+using CarRental.Data.Models;
 
 namespace CarRental.UI
 {
@@ -213,7 +213,7 @@ namespace CarRental.UI
 					CarID = (int)cmbCar.SelectedValue,
 					EmployeeFullName = txtEmployee.Text.Trim(),
 					OrderDate = dtOrderDate.Value.Date,
-					OrderTime = dtOrderTime.Value.TimeOfDay,
+					OrderTime = new TimeSpan(dtOrderTime.Value.Hour, dtOrderTime.Value.Minute, dtOrderTime.Value.Second),
 					ReturnDate = dtReturnDate.Value.Date,
 					Hours = (int)numHours.Value
 				};
@@ -227,8 +227,8 @@ namespace CarRental.UI
 				}
 				else
 				{
-					// Используем транзакционный метод для нового заказа
-					_orderRepo.CreateOrderWithTransaction(order);
+						_orderRepo.Insert(order); // Сохраняем новый заказ
+
 					MessageBox.Show("Заказ успешно создан", "Успех",
 						MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
@@ -242,5 +242,6 @@ namespace CarRental.UI
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+
 	}
 }

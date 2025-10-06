@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CarRental.Data;
-using CarRental.Models;
+using CarRental.Data.Models;
 
 namespace CarRental.UI
 {
@@ -188,6 +188,24 @@ namespace CarRental.UI
 				MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		private void InitializeComponent()
+		{
+			this.SuspendLayout();
+			// 
+			// FormAddEditCustomer
+			// 
+			this.ClientSize = new System.Drawing.Size(284, 261);
+			this.Name = "FormAddEditCustomer";
+			this.Load += new System.EventHandler(this.FormAddEditCustomer_Load);
+			this.ResumeLayout(false);
+
+		}
+
+		private void FormAddEditCustomer_Load(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

@@ -7,8 +7,6 @@ namespace CandyFactory
 	{
 		static void Main()
 		{
-			Utils.PrintHeader("Демонстрация системы CandyFactory");
-
 			// 2. Конструкторы с параметрами
 			var chocolateFactory = new SpecialFactory<Chocolate>("Premium Chocolate");
 			chocolateFactory.Add(new Chocolate("Alpen Gold", 120, 100, 45));
@@ -97,8 +95,7 @@ namespace CandyFactory
 			Utils.PrintHeader("Демонстрация set с логикой в свойствах");
 			try
 			{
-				// Это вызовет исключение из-за логики в set
-				// var invalidCandy = new Chocolate("   ", 50, 30, 60); // Раскомментировать для теста
+				var invalidCandy = new Chocolate("   ", 50, 30, 60); // Раскомментировать для теста
 			}
 			catch (Exception ex)
 			{
@@ -120,14 +117,12 @@ namespace CandyFactory
 			// 14. Наследование обобщений с ограничениями
 			Utils.PrintHeader("Демонстрация ограничений обобщений");
 			Console.WriteLine("SpecialFactory<T> where T : CandyBase - работает корректно");
-			// Раскомментировать для демонстрации ошибки компиляции:
-			// SpecialFactory<string> invalidFactory = new SpecialFactory<string>("Нельзя"); // Ошибка!
+
 
 			// 16. Агрегация (магазин использует фабрику)
 			var shop = new Shop("Сладкий мир", new Factory<CandyBase>("Основная фабрика"));
 			shop.SellAll();
 
-			Console.WriteLine("\n=== Демонстрация завершена ===");
 		}
 	}
 }

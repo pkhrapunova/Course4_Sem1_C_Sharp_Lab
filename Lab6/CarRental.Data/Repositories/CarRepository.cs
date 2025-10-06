@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using CarRental.Models;
+using CarRental.Data.Models;
 
 namespace CarRental.Data
 {
@@ -16,6 +16,7 @@ namespace CarRental.Data
 			_connectionString = ConfigurationManager.ConnectionStrings["CarRentalDb"].ConnectionString;
 		}
 
+		// Получить все автомобили
 		public IEnumerable<Car> GetAll()
 		{
 			var list = new List<Car>();
@@ -30,16 +31,7 @@ namespace CarRental.Data
 					{
 						while (reader.Read())
 						{
-							list.Add(new Car
-							{
-								CarID = (int)reader["CarID"],
-								CarNumber = reader["CarNumber"].ToString(),
-								Make = reader["Make"].ToString(),
-								Mileage = (int)reader["Mileage"],
-								Status = reader["Status"].ToString(),
-								Seats = (int)reader["Seats"],
-								PricePerHour = (decimal)reader["PricePerHour"]
-							});
+							list.Add(MapCar(reader));
 						}
 					}
 				}
@@ -50,34 +42,64 @@ namespace CarRental.Data
 			}
 			return list;
 		}
+		public List<PopularCar> GetPopularCars()
+		{
+			var popularCars = new List<PopularCar>();
+			using (var conn = new SqlConnection(_connectionString))
+			using (var cmd = new SqlCommand(@"
+            SELECT c.CarID, c.CarNumber, c.Make, c.Status, c.PricePerHour,
+			   COUNT(o.OrderID) AS OrderCount,
+			   SUM(o.Hours) AS TotalRentalHours,
+			   AVG(o.Hours*1.0) AS AverageRentalHours
+				FROM Car c
+				JOIN [Order] o ON c.CarID = o.CarID
+				GROUP BY c.CarID, c.CarNumber, c.Make, c.Status, c.PricePerHour
+				HAVING COUNT(o.OrderID) > 2
 
+            ", conn))
+			{
+				conn.Open();
+				using (var reader = cmd.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						popularCars.Add(new PopularCar
+						{
+							CarID = (int)reader["CarID"],
+							CarNumber = reader["CarNumber"].ToString(),
+							Make = reader["Make"].ToString(),
+							Status = reader["Status"].ToString(),
+							PricePerHour = (decimal)reader["PricePerHour"],
+							OrderCount = (int)reader["OrderCount"],
+							TotalRentalHours = (int)reader["TotalRentalHours"],
+							AverageRentalHours = Convert.ToDouble(reader["AverageRentalHours"])
+						});
+					}
+				}
+			}
+			return popularCars;
+		}
+		// Получить автомобиль по ID
 		public Car GetById(int carId)
 		{
 			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("SELECT * FROM Car WHERE CarID = @CarID", conn))
+			using (var cmd = new SqlCommand("sp_GetCarById", conn))
 			{
+				cmd.CommandType = CommandType.StoredProcedure;
 				cmd.Parameters.AddWithValue("@CarID", carId);
 				conn.Open();
 				using (var reader = cmd.ExecuteReader())
 				{
 					if (reader.Read())
 					{
-						return new Car
-						{
-							CarID = (int)reader["CarID"],
-							CarNumber = reader["CarNumber"].ToString(),
-							Make = reader["Make"].ToString(),
-							Mileage = (int)reader["Mileage"],
-							Status = reader["Status"].ToString(),
-							Seats = (int)reader["Seats"],
-							PricePerHour = (decimal)reader["PricePerHour"]
-						};
+						return MapCar(reader);
 					}
 				}
 			}
 			return null;
 		}
 
+		// Добавление автомобиля
 		public void Insert(Car car)
 		{
 			using (var conn = new SqlConnection(_connectionString))
@@ -95,6 +117,7 @@ namespace CarRental.Data
 			}
 		}
 
+		// Обновление автомобиля
 		public void Update(Car car)
 		{
 			using (var conn = new SqlConnection(_connectionString))
@@ -113,7 +136,8 @@ namespace CarRental.Data
 			}
 		}
 
-		public void Delete(int id)
+		// Удаление автомобиля
+		public void Delete(int carId)
 		{
 			try
 			{
@@ -121,60 +145,68 @@ namespace CarRental.Data
 				using (var cmd = new SqlCommand("sp_DeleteCar", conn))
 				{
 					cmd.CommandType = CommandType.StoredProcedure;
-					cmd.Parameters.AddWithValue("@CarID", id);
+					cmd.Parameters.AddWithValue("@CarID", carId);
 					conn.Open();
 					cmd.ExecuteNonQuery();
 				}
 			}
 			catch (SqlException ex) when (ex.Number == 547)
 			{
-				throw new Exception("Нельзя удалить этот элемент, так как он связан с другими данными в системе.");
+				throw new Exception("Нельзя удалить этот автомобиль, так как он связан с заказами.");
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Ошибка при удалении: {ex.Message}", ex);
+				throw new Exception($"Ошибка при удалении автомобиля: {ex.Message}", ex);
 			}
 		}
 
-		// Новый метод для получения доступных автомобилей
+		// Получить все доступные автомобили
 		public IEnumerable<Car> GetAvailableCars()
 		{
 			var list = new List<Car>();
 			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("SELECT * FROM Car WHERE Status = 'Свободна'", conn))
+			using (var cmd = new SqlCommand("sp_GetAvailableCars", conn))
 			{
+				cmd.CommandType = CommandType.StoredProcedure;
 				conn.Open();
 				using (var reader = cmd.ExecuteReader())
 				{
 					while (reader.Read())
 					{
-						list.Add(new Car
-						{
-							CarID = (int)reader["CarID"],
-							CarNumber = reader["CarNumber"].ToString(),
-							Make = reader["Make"].ToString(),
-							Mileage = (int)reader["Mileage"],
-							Status = reader["Status"].ToString(),
-							Seats = (int)reader["Seats"],
-							PricePerHour = (decimal)reader["PricePerHour"]
-						});
+						list.Add(MapCar(reader));
 					}
 				}
 			}
 			return list;
 		}
 
-		// Метод для обновления статуса автомобиля
+		// Обновление статуса автомобиля
 		public void UpdateCarStatus(int carId, string status)
 		{
 			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("UPDATE Car SET Status = @Status WHERE CarID = @CarID", conn))
+			using (var cmd = new SqlCommand("sp_UpdateCarStatus", conn))
 			{
-				cmd.Parameters.AddWithValue("@Status", status);
+				cmd.CommandType = CommandType.StoredProcedure;
 				cmd.Parameters.AddWithValue("@CarID", carId);
+				cmd.Parameters.AddWithValue("@Status", status);
 				conn.Open();
 				cmd.ExecuteNonQuery();
 			}
+		}
+
+		// Вспомогательный метод для маппинга Car из SqlDataReader
+		private Car MapCar(SqlDataReader reader)
+		{
+			return new Car
+			{
+				CarID = (int)reader["CarID"],
+				CarNumber = reader["CarNumber"].ToString(),
+				Make = reader["Make"].ToString(),
+				Mileage = (int)reader["Mileage"],
+				Status = reader["Status"].ToString(),
+				Seats = (int)reader["Seats"],
+				PricePerHour = (decimal)reader["PricePerHour"]
+			};
 		}
 	}
 }

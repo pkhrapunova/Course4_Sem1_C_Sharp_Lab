@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using CarRental.Data;
-using CarRental.Models;
+using CarRental.Data.Models;
+
 
 namespace CarRental.UI
 {
