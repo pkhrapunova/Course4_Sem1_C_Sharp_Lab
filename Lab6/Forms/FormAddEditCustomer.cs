@@ -61,7 +61,7 @@ namespace CarRental.UI
 			Controls.Add(new Label { Text = "Паспорт:*", Top = 80, Left = 10 });
 			Controls.Add(new Label { Text = "Адрес:*", Top = 110, Left = 10 });
 			Controls.Add(new Label { Text = "Телефон:*", Top = 140, Left = 10 });
-			Controls.Add(new Label { Text = "Вод. удостоверение:*", Top = 170, Left = 10 });
+			Controls.Add(new Label { Text = "Права:*", Top = 170, Left = 10 });
 
 			Controls.Add(txtName);
 			Controls.Add(txtPassport);
@@ -188,24 +188,6 @@ namespace CarRental.UI
 				MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-		}
-
-		private void InitializeComponent()
-		{
-			this.SuspendLayout();
-			// 
-			// FormAddEditCustomer
-			// 
-			this.ClientSize = new System.Drawing.Size(284, 261);
-			this.Name = "FormAddEditCustomer";
-			this.Load += new System.EventHandler(this.FormAddEditCustomer_Load);
-			this.ResumeLayout(false);
-
-		}
-
-		private void FormAddEditCustomer_Load(object sender, EventArgs e)
-		{
-
 		}
 	}
 }

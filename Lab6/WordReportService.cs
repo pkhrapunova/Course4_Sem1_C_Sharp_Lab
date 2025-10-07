@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using CarRental.Data.Models;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using CarRental.Data.Models;
 
 namespace CarRental.UI
 {
@@ -41,6 +42,9 @@ namespace CarRental.UI
 
 		public static void CreatePopularCarsReport(string filePath, List<PopularCar> cars)
 		{
+			if (cars == null || cars.Count == 0)
+				throw new ArgumentException("Список машин пуст.");
+
 			using (var wordDoc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
 			{
 				MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
@@ -50,7 +54,9 @@ namespace CarRental.UI
 				body.Append(CreateParagraph("Отчет: Популярные автомобили", true, 28));
 
 				Table table = CreateTable();
-				table.Append(CreateTableRow(true, "ID", "Номер машины", "Марка", "Статус", "Цена за час", "Количество заказов", "Всего часов аренды", "Среднее количество часов"));
+				table.Append(CreateTableRow(true,
+					"ID", "Номер машины", "Марка", "Статус", "Цена за час",
+					"Количество заказов", "Всего часов аренды", "Среднее количество часов"));
 
 				foreach (var car in cars)
 				{
@@ -62,8 +68,7 @@ namespace CarRental.UI
 						car.PricePerHour.ToString("0.00"),
 						car.OrderCount.ToString(),
 						car.TotalRentalHours.ToString(),
-						car.AverageRentalHours.ToString("0.00")
-					));
+						car.AverageRentalHours.ToString("0.00")));
 				}
 
 				body.Append(table);
@@ -71,37 +76,46 @@ namespace CarRental.UI
 			}
 		}
 
-		public static void CreateCustomerSummaryReport(string filePath, List<CustomerTotalReport> customers)
+
+		public static void CreateCustomerSummaryReport(string filePath, List<CustomerTotalReport> reportData)
 		{
+			if (reportData == null || reportData.Count == 0)
+				throw new ArgumentException("Список клиентов пуст.");
+
 			using (var wordDoc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
 			{
-				MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
+				var mainPart = wordDoc.AddMainDocumentPart();
 				mainPart.Document = new Document();
 				var body = mainPart.Document.AppendChild(new Body());
 
-				body.Append(CreateParagraph("Отчет: Суммарная информация по клиентам", true, 28));
+				body.Append(CreateParagraph("Отчет по клиентам: общая сумма проката", true, 28));
 
-				Table table = CreateTable();
-				table.Append(CreateTableRow(true, "ID", "ФИО", "Телефон", "Всего заказов", "Всего часов", "Общая сумма", "Дата первого заказа", "Дата последнего заказа"));
+				var table = CreateTable();
+				table.Append(CreateTableRow(true,
+					"ФИО", "Телефон", "Количество заказов", "Всего часов", "Общая сумма"));
 
-				foreach (var c in customers)
+				decimal grandTotal = 0m;
+
+				foreach (var customer in reportData)
 				{
 					table.Append(CreateTableRow(false,
-						c.CustomerID.ToString(),
-						c.FullName,
-						c.Phone,
-						c.TotalOrders.ToString(),
-						c.TotalHours.ToString(),
-						c.TotalSpent.ToString("0.00"),
-						c.FirstOrderDate.ToShortDateString(),
-						c.LastOrderDate.ToShortDateString()
-					));
+						customer.FullName,
+						customer.Phone,
+						customer.TotalOrders.ToString(),
+						customer.TotalHours.ToString(),
+						customer.TotalSpent.ToString("0.00")));
+
+					grandTotal += customer.TotalSpent;
 				}
+
+				table.Append(CreateTableRow(true,
+					"ИТОГО", "", "", "", grandTotal.ToString("0.00")));
 
 				body.Append(table);
 				mainPart.Document.Save();
 			}
 		}
+
 
 		private static Paragraph CreateParagraph(string text, bool bold = false, int fontSize = 24)
 		{

@@ -25,11 +25,13 @@
 		{
 			this.tabControlMain = new System.Windows.Forms.TabControl();
 			this.tabCustomers = new System.Windows.Forms.TabPage();
+			this.btnSortByName = new System.Windows.Forms.Button();
 			this.dgvCustomers = new System.Windows.Forms.DataGridView();
 			this.btnAddCustomer = new System.Windows.Forms.Button();
 			this.btnEditCustomer = new System.Windows.Forms.Button();
 			this.btnDeleteCustomer = new System.Windows.Forms.Button();
 			this.tabCars = new System.Windows.Forms.TabPage();
+			this.btnSortByPrise = new System.Windows.Forms.Button();
 			this.dgvCars = new System.Windows.Forms.DataGridView();
 			this.btnAddCar = new System.Windows.Forms.Button();
 			this.btnEditCar = new System.Windows.Forms.Button();
@@ -41,7 +43,6 @@
 			this.dtFilterEndDate = new System.Windows.Forms.DateTimePicker();
 			this.btnSearch = new System.Windows.Forms.Button();
 			this.btnResetFilter = new System.Windows.Forms.Button();
-			this.btnSortByDate = new System.Windows.Forms.Button();
 			this.btnSortByPrice = new System.Windows.Forms.Button();
 			this.dgvOrders = new System.Windows.Forms.DataGridView();
 			this.btnAddOrder = new System.Windows.Forms.Button();
@@ -52,6 +53,7 @@
 			this.btnReportGrouped = new System.Windows.Forms.Button();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.BtnLoadCurrentMonth = new System.Windows.Forms.Button();
 			this.tabControlMain.SuspendLayout();
 			this.tabCustomers.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvCustomers)).BeginInit();
@@ -76,6 +78,7 @@
 			// 
 			// tabCustomers
 			// 
+			this.tabCustomers.Controls.Add(this.btnSortByName);
 			this.tabCustomers.Controls.Add(this.dgvCustomers);
 			this.tabCustomers.Controls.Add(this.btnAddCustomer);
 			this.tabCustomers.Controls.Add(this.btnEditCustomer);
@@ -86,15 +89,24 @@
 			this.tabCustomers.TabIndex = 0;
 			this.tabCustomers.Text = "Клиенты";
 			// 
+			// btnSortByName
+			// 
+			this.btnSortByName.Location = new System.Drawing.Point(10, 4);
+			this.btnSortByName.Name = "btnSortByName";
+			this.btnSortByName.Size = new System.Drawing.Size(150, 35);
+			this.btnSortByName.TabIndex = 9;
+			this.btnSortByName.Text = "Сортировать по фио";
+			this.btnSortByName.Click += new System.EventHandler(this.BtnSortByName_Click);
+			// 
 			// dgvCustomers
 			// 
 			this.dgvCustomers.AllowUserToAddRows = false;
 			this.dgvCustomers.AllowUserToDeleteRows = false;
-			this.dgvCustomers.Location = new System.Drawing.Point(10, 10);
+			this.dgvCustomers.Location = new System.Drawing.Point(10, 45);
 			this.dgvCustomers.Name = "dgvCustomers";
 			this.dgvCustomers.ReadOnly = true;
 			this.dgvCustomers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvCustomers.Size = new System.Drawing.Size(1060, 550);
+			this.dgvCustomers.Size = new System.Drawing.Size(1060, 515);
 			this.dgvCustomers.TabIndex = 0;
 			// 
 			// btnAddCustomer
@@ -126,6 +138,7 @@
 			// 
 			// tabCars
 			// 
+			this.tabCars.Controls.Add(this.btnSortByPrise);
 			this.tabCars.Controls.Add(this.dgvCars);
 			this.tabCars.Controls.Add(this.btnAddCar);
 			this.tabCars.Controls.Add(this.btnEditCar);
@@ -136,15 +149,24 @@
 			this.tabCars.TabIndex = 1;
 			this.tabCars.Text = "Машины";
 			// 
+			// btnSortByPrise
+			// 
+			this.btnSortByPrise.Location = new System.Drawing.Point(10, 3);
+			this.btnSortByPrise.Name = "btnSortByPrise";
+			this.btnSortByPrise.Size = new System.Drawing.Size(150, 35);
+			this.btnSortByPrise.TabIndex = 10;
+			this.btnSortByPrise.Text = "Сортировать по цене";
+			this.btnSortByPrise.Click += new System.EventHandler(this.BtnSortByPrise_Click);
+			// 
 			// dgvCars
 			// 
 			this.dgvCars.AllowUserToAddRows = false;
 			this.dgvCars.AllowUserToDeleteRows = false;
-			this.dgvCars.Location = new System.Drawing.Point(10, 10);
+			this.dgvCars.Location = new System.Drawing.Point(10, 42);
 			this.dgvCars.Name = "dgvCars";
 			this.dgvCars.ReadOnly = true;
 			this.dgvCars.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvCars.Size = new System.Drawing.Size(1060, 550);
+			this.dgvCars.Size = new System.Drawing.Size(1060, 518);
 			this.dgvCars.TabIndex = 0;
 			// 
 			// btnAddCar
@@ -176,13 +198,13 @@
 			// 
 			// tabOrders
 			// 
+			this.tabOrders.Controls.Add(this.BtnLoadCurrentMonth);
 			this.tabOrders.Controls.Add(this.cmbFilterCustomer);
 			this.tabOrders.Controls.Add(this.cmbFilterCar);
 			this.tabOrders.Controls.Add(this.dtFilterStartDate);
 			this.tabOrders.Controls.Add(this.dtFilterEndDate);
 			this.tabOrders.Controls.Add(this.btnSearch);
 			this.tabOrders.Controls.Add(this.btnResetFilter);
-			this.tabOrders.Controls.Add(this.btnSortByDate);
 			this.tabOrders.Controls.Add(this.btnSortByPrice);
 			this.tabOrders.Controls.Add(this.dgvOrders);
 			this.tabOrders.Controls.Add(this.btnAddOrder);
@@ -243,18 +265,9 @@
 			this.btnResetFilter.Text = "Сброс";
 			this.btnResetFilter.Click += new System.EventHandler(this.BtnResetFilter_Click);
 			// 
-			// btnSortByDate
-			// 
-			this.btnSortByDate.Location = new System.Drawing.Point(10, 45);
-			this.btnSortByDate.Name = "btnSortByDate";
-			this.btnSortByDate.Size = new System.Drawing.Size(150, 35);
-			this.btnSortByDate.TabIndex = 7;
-			this.btnSortByDate.Text = "Сорт. по дате";
-			this.btnSortByDate.Click += new System.EventHandler(this.BtnSortByDate_Click);
-			// 
 			// btnSortByPrice
 			// 
-			this.btnSortByPrice.Location = new System.Drawing.Point(170, 45);
+			this.btnSortByPrice.Location = new System.Drawing.Point(10, 39);
 			this.btnSortByPrice.Name = "btnSortByPrice";
 			this.btnSortByPrice.Size = new System.Drawing.Size(150, 35);
 			this.btnSortByPrice.TabIndex = 8;
@@ -305,7 +318,7 @@
 			this.btnReportAllOrders.Name = "btnReportAllOrders";
 			this.btnReportAllOrders.Size = new System.Drawing.Size(150, 30);
 			this.btnReportAllOrders.TabIndex = 20;
-			this.btnReportAllOrders.Text = "Отчёт: все заказы";
+			this.btnReportAllOrders.Text = "Отчёт: все машины";
 			this.btnReportAllOrders.UseVisualStyleBackColor = true;
 			this.btnReportAllOrders.Click += new System.EventHandler(this.BtnReportAllOrders_Click);
 			// 
@@ -342,6 +355,15 @@
 			// 
 			this.statusLabel.Name = "statusLabel";
 			this.statusLabel.Size = new System.Drawing.Size(0, 17);
+			// 
+			// BtnLoadCurrentMonth
+			// 
+			this.BtnLoadCurrentMonth.Location = new System.Drawing.Point(170, 39);
+			this.BtnLoadCurrentMonth.Name = "BtnLoadCurrentMonth";
+			this.BtnLoadCurrentMonth.Size = new System.Drawing.Size(150, 35);
+			this.BtnLoadCurrentMonth.TabIndex = 23;
+			this.BtnLoadCurrentMonth.Text = "Часы за месяц";
+			this.BtnLoadCurrentMonth.Click += new System.EventHandler(this.BtnLoadCurrentMonth_Click);
 			// 
 			// MainForm
 			// 
@@ -389,7 +411,6 @@
 		private System.Windows.Forms.DateTimePicker dtFilterEndDate;
 		private System.Windows.Forms.Button btnSearch;
 		private System.Windows.Forms.Button btnResetFilter;
-		private System.Windows.Forms.Button btnSortByDate;
 		private System.Windows.Forms.Button btnSortByPrice;
 		private System.Windows.Forms.StatusStrip statusStrip;
 		private System.Windows.Forms.ToolStripStatusLabel statusLabel;
@@ -399,5 +420,8 @@
 
 		#endregion
 
+		private System.Windows.Forms.Button btnSortByName;
+		private System.Windows.Forms.Button btnSortByPrise;
+		private System.Windows.Forms.Button BtnLoadCurrentMonth;
 	}
 }

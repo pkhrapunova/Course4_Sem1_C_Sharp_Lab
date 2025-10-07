@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using CarRental.Data.Models;
 
 namespace CarRental.Data
@@ -45,20 +46,13 @@ namespace CarRental.Data
 		public List<PopularCar> GetPopularCars()
 		{
 			var popularCars = new List<PopularCar>();
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand(@"
-            SELECT c.CarID, c.CarNumber, c.Make, c.Status, c.PricePerHour,
-			   COUNT(o.OrderID) AS OrderCount,
-			   SUM(o.Hours) AS TotalRentalHours,
-			   AVG(o.Hours*1.0) AS AverageRentalHours
-				FROM Car c
-				JOIN [Order] o ON c.CarID = o.CarID
-				GROUP BY c.CarID, c.CarNumber, c.Make, c.Status, c.PricePerHour
-				HAVING COUNT(o.OrderID) > 2
 
-            ", conn))
+			using (var conn = new SqlConnection(_connectionString))
+			using (var cmd = new SqlCommand("sp_GetPopularCars", conn))
 			{
+				cmd.CommandType = CommandType.StoredProcedure;
 				conn.Open();
+
 				using (var reader = cmd.ExecuteReader())
 				{
 					while (reader.Read())
@@ -77,8 +71,11 @@ namespace CarRental.Data
 					}
 				}
 			}
+
 			return popularCars;
 		}
+
+
 		// Получить автомобиль по ID
 		public Car GetById(int carId)
 		{
@@ -193,6 +190,34 @@ namespace CarRental.Data
 				cmd.ExecuteNonQuery();
 			}
 		}
+		public List<CarCurrentMonth> GetCarsCurrentMonth()
+		{
+			var cars = new List<CarCurrentMonth>();
+
+			using (var conn = new SqlConnection(_connectionString))
+			using (var cmd = new SqlCommand("sp_GetCarsCurrentMonth", conn))
+			{
+				cmd.CommandType = CommandType.StoredProcedure;
+				conn.Open();
+
+				using (var reader = cmd.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						cars.Add(new CarCurrentMonth
+						{
+							CarID = (int)reader["CarID"],
+							CarNumber = reader["CarNumber"].ToString(),
+							Make = reader["Make"].ToString(),
+							TotalHoursThisMonth = (int)reader["TotalHoursThisMonth"]
+						});
+					}
+				}
+			}
+
+			return cars;
+		}
+
 
 		// Вспомогательный метод для маппинга Car из SqlDataReader
 		private Car MapCar(SqlDataReader reader)

@@ -60,12 +60,12 @@ namespace CarRental.UI
 			btnCancel.Click += (s, e) => Close();
 
 			Controls.Add(lblTitle);
-			Controls.Add(new Label { Text = "Номер:*", Top = 50, Left = 10 });
-			Controls.Add(new Label { Text = "Марка:*", Top = 80, Left = 10 });
+			Controls.Add(new Label { Text = "Номер:", Top = 50, Left = 10 });
+			Controls.Add(new Label { Text = "Марка:", Top = 80, Left = 10 });
 			Controls.Add(new Label { Text = "Пробег:", Top = 110, Left = 10 });
-			Controls.Add(new Label { Text = "Статус:*", Top = 140, Left = 10 });
-			Controls.Add(new Label { Text = "Сиденья:*", Top = 170, Left = 10 });
-			Controls.Add(new Label { Text = "Цена/час:*", Top = 200, Left = 10 });
+			Controls.Add(new Label { Text = "Статус:", Top = 140, Left = 10 });
+			Controls.Add(new Label { Text = "Сиденья:", Top = 170, Left = 10 });
+			Controls.Add(new Label { Text = "Цена/час:", Top = 200, Left = 10 });
 
 			Controls.Add(txtNumber);
 			Controls.Add(txtMake);
@@ -186,6 +186,12 @@ namespace CarRental.UI
 				MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+
+		private void FormAddEditCar_Load(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

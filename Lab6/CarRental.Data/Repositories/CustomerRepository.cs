@@ -116,7 +116,6 @@ namespace CarRental.Data
 			}
 		}
 
-		// Вспомогательный метод для маппинга клиента из SqlDataReader
 		private Customer MapCustomer(SqlDataReader reader)
 		{
 			return new Customer
