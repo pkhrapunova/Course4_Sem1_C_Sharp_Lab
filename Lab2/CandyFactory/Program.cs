@@ -25,7 +25,7 @@ namespace CandyFactory
 			var factories = new IFactory[] { chocolateFactory, lollipopFactory, toffeeFactory };
 
 			// 19. Демонстрация всех элементов
-			Console.WriteLine("=== Все конфеты на фабриках ===");
+			Console.WriteLine("Все конфеты на фабриках ");
 			foreach (var factory in factories)
 			{
 				Console.WriteLine($"\nФабрика: {factory.Name}");

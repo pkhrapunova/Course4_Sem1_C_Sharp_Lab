@@ -6,7 +6,7 @@ namespace CandyFactory
 	{
 		public static void PrintHeader(string title)
 		{
-			Console.WriteLine("\n=== " + title + " ===");
+			Console.WriteLine("\n--------- " + title + " -------");
 		}
 	}
 }

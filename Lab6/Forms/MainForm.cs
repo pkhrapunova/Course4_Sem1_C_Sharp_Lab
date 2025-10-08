@@ -276,7 +276,7 @@ namespace CarRental.UI
 			if (dgvCustomers.SelectedRows.Count == 0) return;
 
 			int customerId = (int)dgvCustomers.SelectedRows[0].Cells["CustomerID"].Value;
-			var form = new FormAddEditCustomer(_customerRepo, customerId); // передаём репозиторий + ID
+			var form = new FormAddEditCustomer(_customerRepo, customerId);
 			if (form.ShowDialog() == DialogResult.OK)
 				LoadCustomers();
 		}
@@ -286,7 +286,7 @@ namespace CarRental.UI
 		{
 			if (dgvCustomers.SelectedRows.Count == 0) return;
 
-			var selected = (Customer)dgvCustomers.SelectedRows[0].DataBoundItem;
+			var selected = (CustomerDisplayModel)dgvCustomers.SelectedRows[0].DataBoundItem;
 			if (MessageBox.Show($"Удалить клиента {selected.FullName}?", "Подтверждение",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 			{

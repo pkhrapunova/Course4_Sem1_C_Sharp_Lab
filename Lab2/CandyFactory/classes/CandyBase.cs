@@ -48,7 +48,7 @@ namespace CandyFactory
 		}
 
 		public abstract void Prepare();
-		public virtual string GetLabel() => $"{Name} - {Weight}g - {Price:C}";
+		public virtual string GetLabel() => $"{Name} - {Weight}g - {Price} руб.";
 
 		public override string ToString() => GetLabel();
 

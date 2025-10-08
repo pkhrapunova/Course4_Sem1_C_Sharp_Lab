@@ -37,6 +37,7 @@
 			this.btnEditCar = new System.Windows.Forms.Button();
 			this.btnDeleteCar = new System.Windows.Forms.Button();
 			this.tabOrders = new System.Windows.Forms.TabPage();
+			this.BtnLoadCurrentMonth = new System.Windows.Forms.Button();
 			this.cmbFilterCustomer = new System.Windows.Forms.ComboBox();
 			this.cmbFilterCar = new System.Windows.Forms.ComboBox();
 			this.dtFilterStartDate = new System.Windows.Forms.DateTimePicker();
@@ -53,7 +54,6 @@
 			this.btnReportGrouped = new System.Windows.Forms.Button();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.BtnLoadCurrentMonth = new System.Windows.Forms.Button();
 			this.tabControlMain.SuspendLayout();
 			this.tabCustomers.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvCustomers)).BeginInit();
@@ -73,7 +73,7 @@
 			this.tabControlMain.Location = new System.Drawing.Point(0, 0);
 			this.tabControlMain.Name = "tabControlMain";
 			this.tabControlMain.SelectedIndex = 0;
-			this.tabControlMain.Size = new System.Drawing.Size(1100, 678);
+			this.tabControlMain.Size = new System.Drawing.Size(1100, 622);
 			this.tabControlMain.TabIndex = 0;
 			// 
 			// tabCustomers
@@ -83,9 +83,9 @@
 			this.tabCustomers.Controls.Add(this.btnAddCustomer);
 			this.tabCustomers.Controls.Add(this.btnEditCustomer);
 			this.tabCustomers.Controls.Add(this.btnDeleteCustomer);
-			this.tabCustomers.Location = new System.Drawing.Point(4, 22);
+			this.tabCustomers.Location = new System.Drawing.Point(4, 29);
 			this.tabCustomers.Name = "tabCustomers";
-			this.tabCustomers.Size = new System.Drawing.Size(1092, 652);
+			this.tabCustomers.Size = new System.Drawing.Size(1092, 589);
 			this.tabCustomers.TabIndex = 0;
 			this.tabCustomers.Text = "Клиенты";
 			// 
@@ -102,11 +102,13 @@
 			// 
 			this.dgvCustomers.AllowUserToAddRows = false;
 			this.dgvCustomers.AllowUserToDeleteRows = false;
+			this.dgvCustomers.ColumnHeadersHeight = 34;
 			this.dgvCustomers.Location = new System.Drawing.Point(10, 45);
 			this.dgvCustomers.Name = "dgvCustomers";
 			this.dgvCustomers.ReadOnly = true;
+			this.dgvCustomers.RowHeadersWidth = 62;
 			this.dgvCustomers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvCustomers.Size = new System.Drawing.Size(1060, 515);
+			this.dgvCustomers.Size = new System.Drawing.Size(1060, 460);
 			this.dgvCustomers.TabIndex = 0;
 			// 
 			// btnAddCustomer
@@ -143,9 +145,9 @@
 			this.tabCars.Controls.Add(this.btnAddCar);
 			this.tabCars.Controls.Add(this.btnEditCar);
 			this.tabCars.Controls.Add(this.btnDeleteCar);
-			this.tabCars.Location = new System.Drawing.Point(4, 22);
+			this.tabCars.Location = new System.Drawing.Point(4, 29);
 			this.tabCars.Name = "tabCars";
-			this.tabCars.Size = new System.Drawing.Size(1092, 652);
+			this.tabCars.Size = new System.Drawing.Size(1092, 645);
 			this.tabCars.TabIndex = 1;
 			this.tabCars.Text = "Машины";
 			// 
@@ -162,9 +164,11 @@
 			// 
 			this.dgvCars.AllowUserToAddRows = false;
 			this.dgvCars.AllowUserToDeleteRows = false;
+			this.dgvCars.ColumnHeadersHeight = 34;
 			this.dgvCars.Location = new System.Drawing.Point(10, 42);
 			this.dgvCars.Name = "dgvCars";
 			this.dgvCars.ReadOnly = true;
+			this.dgvCars.RowHeadersWidth = 62;
 			this.dgvCars.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.dgvCars.Size = new System.Drawing.Size(1060, 518);
 			this.dgvCars.TabIndex = 0;
@@ -213,38 +217,47 @@
 			this.tabOrders.Controls.Add(this.btnReportAllOrders);
 			this.tabOrders.Controls.Add(this.btnReportByQuery);
 			this.tabOrders.Controls.Add(this.btnReportGrouped);
-			this.tabOrders.Location = new System.Drawing.Point(4, 22);
+			this.tabOrders.Location = new System.Drawing.Point(4, 29);
 			this.tabOrders.Name = "tabOrders";
-			this.tabOrders.Size = new System.Drawing.Size(1092, 652);
+			this.tabOrders.Size = new System.Drawing.Size(1092, 589);
 			this.tabOrders.TabIndex = 2;
 			this.tabOrders.Text = "Заказы";
+			// 
+			// BtnLoadCurrentMonth
+			// 
+			this.BtnLoadCurrentMonth.Location = new System.Drawing.Point(170, 39);
+			this.BtnLoadCurrentMonth.Name = "BtnLoadCurrentMonth";
+			this.BtnLoadCurrentMonth.Size = new System.Drawing.Size(150, 35);
+			this.BtnLoadCurrentMonth.TabIndex = 23;
+			this.BtnLoadCurrentMonth.Text = "Часы за месяц";
+			this.BtnLoadCurrentMonth.Click += new System.EventHandler(this.BtnLoadCurrentMonth_Click);
 			// 
 			// cmbFilterCustomer
 			// 
 			this.cmbFilterCustomer.Location = new System.Drawing.Point(10, 10);
 			this.cmbFilterCustomer.Name = "cmbFilterCustomer";
-			this.cmbFilterCustomer.Size = new System.Drawing.Size(150, 21);
+			this.cmbFilterCustomer.Size = new System.Drawing.Size(150, 28);
 			this.cmbFilterCustomer.TabIndex = 1;
 			// 
 			// cmbFilterCar
 			// 
 			this.cmbFilterCar.Location = new System.Drawing.Point(170, 9);
 			this.cmbFilterCar.Name = "cmbFilterCar";
-			this.cmbFilterCar.Size = new System.Drawing.Size(150, 21);
+			this.cmbFilterCar.Size = new System.Drawing.Size(150, 28);
 			this.cmbFilterCar.TabIndex = 2;
 			// 
 			// dtFilterStartDate
 			// 
 			this.dtFilterStartDate.Location = new System.Drawing.Point(336, 9);
 			this.dtFilterStartDate.Name = "dtFilterStartDate";
-			this.dtFilterStartDate.Size = new System.Drawing.Size(120, 20);
+			this.dtFilterStartDate.Size = new System.Drawing.Size(120, 26);
 			this.dtFilterStartDate.TabIndex = 3;
 			// 
 			// dtFilterEndDate
 			// 
 			this.dtFilterEndDate.Location = new System.Drawing.Point(462, 9);
 			this.dtFilterEndDate.Name = "dtFilterEndDate";
-			this.dtFilterEndDate.Size = new System.Drawing.Size(120, 20);
+			this.dtFilterEndDate.Size = new System.Drawing.Size(120, 26);
 			this.dtFilterEndDate.TabIndex = 4;
 			// 
 			// btnSearch
@@ -278,16 +291,18 @@
 			// 
 			this.dgvOrders.AllowUserToAddRows = false;
 			this.dgvOrders.AllowUserToDeleteRows = false;
+			this.dgvOrders.ColumnHeadersHeight = 34;
 			this.dgvOrders.Location = new System.Drawing.Point(10, 80);
 			this.dgvOrders.Name = "dgvOrders";
 			this.dgvOrders.ReadOnly = true;
+			this.dgvOrders.RowHeadersWidth = 62;
 			this.dgvOrders.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvOrders.Size = new System.Drawing.Size(1060, 500);
+			this.dgvOrders.Size = new System.Drawing.Size(1060, 450);
 			this.dgvOrders.TabIndex = 9;
 			// 
 			// btnAddOrder
 			// 
-			this.btnAddOrder.Location = new System.Drawing.Point(10, 600);
+			this.btnAddOrder.Location = new System.Drawing.Point(10, 552);
 			this.btnAddOrder.Name = "btnAddOrder";
 			this.btnAddOrder.Size = new System.Drawing.Size(75, 23);
 			this.btnAddOrder.TabIndex = 10;
@@ -296,7 +311,7 @@
 			// 
 			// btnEditOrder
 			// 
-			this.btnEditOrder.Location = new System.Drawing.Point(110, 600);
+			this.btnEditOrder.Location = new System.Drawing.Point(109, 552);
 			this.btnEditOrder.Name = "btnEditOrder";
 			this.btnEditOrder.Size = new System.Drawing.Size(75, 23);
 			this.btnEditOrder.TabIndex = 11;
@@ -305,7 +320,7 @@
 			// 
 			// btnDeleteOrder
 			// 
-			this.btnDeleteOrder.Location = new System.Drawing.Point(210, 600);
+			this.btnDeleteOrder.Location = new System.Drawing.Point(209, 552);
 			this.btnDeleteOrder.Name = "btnDeleteOrder";
 			this.btnDeleteOrder.Size = new System.Drawing.Size(75, 23);
 			this.btnDeleteOrder.TabIndex = 12;
@@ -314,7 +329,7 @@
 			// 
 			// btnReportAllOrders
 			// 
-			this.btnReportAllOrders.Location = new System.Drawing.Point(600, 600);
+			this.btnReportAllOrders.Location = new System.Drawing.Point(602, 545);
 			this.btnReportAllOrders.Name = "btnReportAllOrders";
 			this.btnReportAllOrders.Size = new System.Drawing.Size(150, 30);
 			this.btnReportAllOrders.TabIndex = 20;
@@ -324,7 +339,7 @@
 			// 
 			// btnReportByQuery
 			// 
-			this.btnReportByQuery.Location = new System.Drawing.Point(760, 600);
+			this.btnReportByQuery.Location = new System.Drawing.Point(758, 545);
 			this.btnReportByQuery.Name = "btnReportByQuery";
 			this.btnReportByQuery.Size = new System.Drawing.Size(150, 30);
 			this.btnReportByQuery.TabIndex = 21;
@@ -334,7 +349,7 @@
 			// 
 			// btnReportGrouped
 			// 
-			this.btnReportGrouped.Location = new System.Drawing.Point(920, 600);
+			this.btnReportGrouped.Location = new System.Drawing.Point(914, 545);
 			this.btnReportGrouped.Name = "btnReportGrouped";
 			this.btnReportGrouped.Size = new System.Drawing.Size(150, 30);
 			this.btnReportGrouped.TabIndex = 22;
@@ -344,9 +359,10 @@
 			// 
 			// statusStrip
 			// 
+			this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
 			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusLabel});
-			this.statusStrip.Location = new System.Drawing.Point(0, 678);
+			this.statusStrip.Location = new System.Drawing.Point(0, 622);
 			this.statusStrip.Name = "statusStrip";
 			this.statusStrip.Size = new System.Drawing.Size(1100, 22);
 			this.statusStrip.TabIndex = 0;
@@ -354,20 +370,11 @@
 			// statusLabel
 			// 
 			this.statusLabel.Name = "statusLabel";
-			this.statusLabel.Size = new System.Drawing.Size(0, 17);
-			// 
-			// BtnLoadCurrentMonth
-			// 
-			this.BtnLoadCurrentMonth.Location = new System.Drawing.Point(170, 39);
-			this.BtnLoadCurrentMonth.Name = "BtnLoadCurrentMonth";
-			this.BtnLoadCurrentMonth.Size = new System.Drawing.Size(150, 35);
-			this.BtnLoadCurrentMonth.TabIndex = 23;
-			this.BtnLoadCurrentMonth.Text = "Часы за месяц";
-			this.BtnLoadCurrentMonth.Click += new System.EventHandler(this.BtnLoadCurrentMonth_Click);
+			this.statusLabel.Size = new System.Drawing.Size(0, 15);
 			// 
 			// MainForm
 			// 
-			this.ClientSize = new System.Drawing.Size(1100, 700);
+			this.ClientSize = new System.Drawing.Size(1100, 644);
 			this.Controls.Add(this.tabControlMain);
 			this.Controls.Add(this.statusStrip);
 			this.Name = "MainForm";
