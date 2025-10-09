@@ -49,11 +49,13 @@
 			this.btnAddOrder = new System.Windows.Forms.Button();
 			this.btnEditOrder = new System.Windows.Forms.Button();
 			this.btnDeleteOrder = new System.Windows.Forms.Button();
-			this.btnReportAllOrders = new System.Windows.Forms.Button();
-			this.btnReportByQuery = new System.Windows.Forms.Button();
-			this.btnReportGrouped = new System.Windows.Forms.Button();
+			this.tabService = new System.Windows.Forms.TabPage();
+			this.BtnAddService = new System.Windows.Forms.Button();
+			this.BtnEditService = new System.Windows.Forms.Button();
+			this.BtnDeleteService = new System.Windows.Forms.Button();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+			this.dgvServices = new System.Windows.Forms.DataGridView();
 			this.tabControlMain.SuspendLayout();
 			this.tabCustomers.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvCustomers)).BeginInit();
@@ -61,7 +63,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.dgvCars)).BeginInit();
 			this.tabOrders.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvOrders)).BeginInit();
+			this.tabService.SuspendLayout();
 			this.statusStrip.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dgvServices)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tabControlMain
@@ -69,6 +73,7 @@
 			this.tabControlMain.Controls.Add(this.tabCustomers);
 			this.tabControlMain.Controls.Add(this.tabCars);
 			this.tabControlMain.Controls.Add(this.tabOrders);
+			this.tabControlMain.Controls.Add(this.tabService);
 			this.tabControlMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabControlMain.Location = new System.Drawing.Point(0, 0);
 			this.tabControlMain.Name = "tabControlMain";
@@ -83,9 +88,9 @@
 			this.tabCustomers.Controls.Add(this.btnAddCustomer);
 			this.tabCustomers.Controls.Add(this.btnEditCustomer);
 			this.tabCustomers.Controls.Add(this.btnDeleteCustomer);
-			this.tabCustomers.Location = new System.Drawing.Point(4, 29);
+			this.tabCustomers.Location = new System.Drawing.Point(4, 22);
 			this.tabCustomers.Name = "tabCustomers";
-			this.tabCustomers.Size = new System.Drawing.Size(1092, 589);
+			this.tabCustomers.Size = new System.Drawing.Size(1092, 596);
 			this.tabCustomers.TabIndex = 0;
 			this.tabCustomers.Text = "Клиенты";
 			// 
@@ -145,9 +150,9 @@
 			this.tabCars.Controls.Add(this.btnAddCar);
 			this.tabCars.Controls.Add(this.btnEditCar);
 			this.tabCars.Controls.Add(this.btnDeleteCar);
-			this.tabCars.Location = new System.Drawing.Point(4, 29);
+			this.tabCars.Location = new System.Drawing.Point(4, 22);
 			this.tabCars.Name = "tabCars";
-			this.tabCars.Size = new System.Drawing.Size(1092, 645);
+			this.tabCars.Size = new System.Drawing.Size(1092, 596);
 			this.tabCars.TabIndex = 1;
 			this.tabCars.Text = "Машины";
 			// 
@@ -214,12 +219,9 @@
 			this.tabOrders.Controls.Add(this.btnAddOrder);
 			this.tabOrders.Controls.Add(this.btnEditOrder);
 			this.tabOrders.Controls.Add(this.btnDeleteOrder);
-			this.tabOrders.Controls.Add(this.btnReportAllOrders);
-			this.tabOrders.Controls.Add(this.btnReportByQuery);
-			this.tabOrders.Controls.Add(this.btnReportGrouped);
-			this.tabOrders.Location = new System.Drawing.Point(4, 29);
+			this.tabOrders.Location = new System.Drawing.Point(4, 22);
 			this.tabOrders.Name = "tabOrders";
-			this.tabOrders.Size = new System.Drawing.Size(1092, 589);
+			this.tabOrders.Size = new System.Drawing.Size(1092, 596);
 			this.tabOrders.TabIndex = 2;
 			this.tabOrders.Text = "Заказы";
 			// 
@@ -236,28 +238,28 @@
 			// 
 			this.cmbFilterCustomer.Location = new System.Drawing.Point(10, 10);
 			this.cmbFilterCustomer.Name = "cmbFilterCustomer";
-			this.cmbFilterCustomer.Size = new System.Drawing.Size(150, 28);
+			this.cmbFilterCustomer.Size = new System.Drawing.Size(150, 21);
 			this.cmbFilterCustomer.TabIndex = 1;
 			// 
 			// cmbFilterCar
 			// 
 			this.cmbFilterCar.Location = new System.Drawing.Point(170, 9);
 			this.cmbFilterCar.Name = "cmbFilterCar";
-			this.cmbFilterCar.Size = new System.Drawing.Size(150, 28);
+			this.cmbFilterCar.Size = new System.Drawing.Size(150, 21);
 			this.cmbFilterCar.TabIndex = 2;
 			// 
 			// dtFilterStartDate
 			// 
 			this.dtFilterStartDate.Location = new System.Drawing.Point(336, 9);
 			this.dtFilterStartDate.Name = "dtFilterStartDate";
-			this.dtFilterStartDate.Size = new System.Drawing.Size(120, 26);
+			this.dtFilterStartDate.Size = new System.Drawing.Size(120, 20);
 			this.dtFilterStartDate.TabIndex = 3;
 			// 
 			// dtFilterEndDate
 			// 
 			this.dtFilterEndDate.Location = new System.Drawing.Point(462, 9);
 			this.dtFilterEndDate.Name = "dtFilterEndDate";
-			this.dtFilterEndDate.Size = new System.Drawing.Size(120, 26);
+			this.dtFilterEndDate.Size = new System.Drawing.Size(120, 20);
 			this.dtFilterEndDate.TabIndex = 4;
 			// 
 			// btnSearch
@@ -327,35 +329,43 @@
 			this.btnDeleteOrder.Text = "Удалить";
 			this.btnDeleteOrder.Click += new System.EventHandler(this.BtnDeleteOrder_Click);
 			// 
-			// btnReportAllOrders
+			// tabService
 			// 
-			this.btnReportAllOrders.Location = new System.Drawing.Point(602, 545);
-			this.btnReportAllOrders.Name = "btnReportAllOrders";
-			this.btnReportAllOrders.Size = new System.Drawing.Size(150, 30);
-			this.btnReportAllOrders.TabIndex = 20;
-			this.btnReportAllOrders.Text = "Отчёт: все машины";
-			this.btnReportAllOrders.UseVisualStyleBackColor = true;
-			this.btnReportAllOrders.Click += new System.EventHandler(this.BtnReportAllOrders_Click);
+			this.tabService.Controls.Add(this.dgvServices);
+			this.tabService.Controls.Add(this.BtnAddService);
+			this.tabService.Controls.Add(this.BtnEditService);
+			this.tabService.Controls.Add(this.BtnDeleteService);
+			this.tabService.Location = new System.Drawing.Point(4, 22);
+			this.tabService.Name = "tabService";
+			this.tabService.Padding = new System.Windows.Forms.Padding(3);
+			this.tabService.Size = new System.Drawing.Size(1092, 596);
+			this.tabService.TabIndex = 3;
+			this.tabService.Text = "Услуги";
 			// 
-			// btnReportByQuery
+			// BtnAddService
 			// 
-			this.btnReportByQuery.Location = new System.Drawing.Point(758, 545);
-			this.btnReportByQuery.Name = "btnReportByQuery";
-			this.btnReportByQuery.Size = new System.Drawing.Size(150, 30);
-			this.btnReportByQuery.TabIndex = 21;
-			this.btnReportByQuery.Text = "Отчёт: запрос";
-			this.btnReportByQuery.UseVisualStyleBackColor = true;
-			this.btnReportByQuery.Click += new System.EventHandler(this.BtnReportByQuery_Click);
+			this.BtnAddService.Location = new System.Drawing.Point(6, 567);
+			this.BtnAddService.Name = "BtnAddService";
+			this.BtnAddService.Size = new System.Drawing.Size(75, 23);
+			this.BtnAddService.TabIndex = 4;
+			this.BtnAddService.Text = "Добавить";
+			this.BtnAddService.Click += new System.EventHandler(this.BtnAddService_Click);
 			// 
-			// btnReportGrouped
+			// BtnEditService
 			// 
-			this.btnReportGrouped.Location = new System.Drawing.Point(914, 545);
-			this.btnReportGrouped.Name = "btnReportGrouped";
-			this.btnReportGrouped.Size = new System.Drawing.Size(150, 30);
-			this.btnReportGrouped.TabIndex = 22;
-			this.btnReportGrouped.Text = "Отчёт: группировка";
-			this.btnReportGrouped.UseVisualStyleBackColor = true;
-			this.btnReportGrouped.Click += new System.EventHandler(this.BtnReportGrouped_Click);
+			this.BtnEditService.Location = new System.Drawing.Point(106, 567);
+			this.BtnEditService.Name = "BtnEditService";
+			this.BtnEditService.Size = new System.Drawing.Size(75, 23);
+			this.BtnEditService.TabIndex = 5;
+			this.BtnEditService.Text = "Изменить";
+			// 
+			// BtnDeleteService
+			// 
+			this.BtnDeleteService.Location = new System.Drawing.Point(206, 567);
+			this.BtnDeleteService.Name = "BtnDeleteService";
+			this.BtnDeleteService.Size = new System.Drawing.Size(75, 23);
+			this.BtnDeleteService.TabIndex = 6;
+			this.BtnDeleteService.Text = "Удалить";
 			// 
 			// statusStrip
 			// 
@@ -370,7 +380,20 @@
 			// statusLabel
 			// 
 			this.statusLabel.Name = "statusLabel";
-			this.statusLabel.Size = new System.Drawing.Size(0, 15);
+			this.statusLabel.Size = new System.Drawing.Size(0, 17);
+			// 
+			// dataGridView1
+			// 
+			this.dgvServices.AllowUserToAddRows = false;
+			this.dgvServices.AllowUserToDeleteRows = false;
+			this.dgvServices.ColumnHeadersHeight = 34;
+			this.dgvServices.Location = new System.Drawing.Point(16, 68);
+			this.dgvServices.Name = "dataGridView1";
+			this.dgvServices.ReadOnly = true;
+			this.dgvServices.RowHeadersWidth = 62;
+			this.dgvServices.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+			this.dgvServices.Size = new System.Drawing.Size(1060, 460);
+			this.dgvServices.TabIndex = 7;
 			// 
 			// MainForm
 			// 
@@ -387,8 +410,10 @@
 			((System.ComponentModel.ISupportInitialize)(this.dgvCars)).EndInit();
 			this.tabOrders.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dgvOrders)).EndInit();
+			this.tabService.ResumeLayout(false);
 			this.statusStrip.ResumeLayout(false);
 			this.statusStrip.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.dgvServices)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -396,9 +421,6 @@
 		#endregion
 
 		#region Поля элементов
-		private System.Windows.Forms.Button btnReportAllOrders;
-		private System.Windows.Forms.Button btnReportByQuery;
-		private System.Windows.Forms.Button btnReportGrouped;
 		private System.Windows.Forms.TabControl tabControlMain;
 		private System.Windows.Forms.TabPage tabCustomers;
 		private System.Windows.Forms.TabPage tabCars;
@@ -430,5 +452,10 @@
 		private System.Windows.Forms.Button btnSortByName;
 		private System.Windows.Forms.Button btnSortByPrise;
 		private System.Windows.Forms.Button BtnLoadCurrentMonth;
+		private System.Windows.Forms.TabPage tabService;
+		private System.Windows.Forms.Button BtnAddService;
+		private System.Windows.Forms.Button BtnEditService;
+		private System.Windows.Forms.Button BtnDeleteService;
+		private System.Windows.Forms.DataGridView dgvServices;
 	}
 }

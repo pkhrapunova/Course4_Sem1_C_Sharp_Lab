@@ -1,155 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using CarRental.Data.Models;
+using System.Data.Entity;
 
 namespace CarRental.Data
 {
 	public class CarRepository : IRepository<Car>
 	{
-		private readonly string _connectionString;
+		private readonly CarRentalDbContext _context;
 
 		public CarRepository()
 		{
-			_connectionString = ConfigurationManager.ConnectionStrings["CarRentalDb"].ConnectionString;
+			_context = new CarRentalDbContext();
 		}
 
 		// Получить все автомобили
 		public IEnumerable<Car> GetAll()
 		{
-			var list = new List<Car>();
 			try
 			{
-				using (var conn = new SqlConnection(_connectionString))
-				using (var cmd = new SqlCommand("sp_GetAllCars", conn))
-				{
-					cmd.CommandType = CommandType.StoredProcedure;
-					conn.Open();
-					using (var reader = cmd.ExecuteReader())
-					{
-						while (reader.Read())
-						{
-							list.Add(MapCar(reader));
-						}
-					}
-				}
+				return _context.Cars.ToList();
 			}
 			catch (Exception ex)
 			{
 				throw new Exception($"Ошибка при загрузке автомобилей: {ex.Message}", ex);
 			}
-			return list;
 		}
+
 		public List<PopularCar> GetPopularCars()
 		{
-			var popularCars = new List<PopularCar>();
-
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_GetPopularCars", conn))
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				conn.Open();
-
-				using (var reader = cmd.ExecuteReader())
+			var popularCars = _context.Cars
+				.Select(c => new PopularCar
 				{
-					while (reader.Read())
-					{
-						popularCars.Add(new PopularCar
-						{
-							CarID = (int)reader["CarID"],
-							CarNumber = reader["CarNumber"].ToString(),
-							Make = reader["Make"].ToString(),
-							Status = reader["Status"].ToString(),
-							PricePerHour = (decimal)reader["PricePerHour"],
-							OrderCount = (int)reader["OrderCount"],
-							TotalRentalHours = (int)reader["TotalRentalHours"],
-							AverageRentalHours = Convert.ToDouble(reader["AverageRentalHours"])
-						});
-					}
-				}
-			}
+					CarID = c.CarID,
+					CarNumber = c.CarNumber,
+					Make = c.Make,
+					Status = c.Status,
+					PricePerHour = c.PricePerHour,
+					OrderCount = c.Orders.Count,
+					TotalRentalHours = c.Orders.Sum(o => o.Hours),
+					AverageRentalHours = c.Orders.Any() ? c.Orders.Average(o => (double)o.Hours) : 0
+				})
+				.OrderByDescending(c => c.OrderCount)
+				.ToList();
 
 			return popularCars;
 		}
 
-
 		// Получить автомобиль по ID
 		public Car GetById(int carId)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_GetCarById", conn))
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@CarID", carId);
-				conn.Open();
-				using (var reader = cmd.ExecuteReader())
-				{
-					if (reader.Read())
-					{
-						return MapCar(reader);
-					}
-				}
-			}
-			return null;
+			return _context.Cars.Find(carId);
 		}
 
 		// Добавление автомобиля
 		public void Insert(Car car)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_InsertCar", conn))
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@CarNumber", car.CarNumber);
-				cmd.Parameters.AddWithValue("@Make", car.Make);
-				cmd.Parameters.AddWithValue("@Mileage", car.Mileage);
-				cmd.Parameters.AddWithValue("@Status", car.Status);
-				cmd.Parameters.AddWithValue("@Seats", car.Seats);
-				cmd.Parameters.AddWithValue("@PricePerHour", car.PricePerHour);
-				conn.Open();
-				cmd.ExecuteNonQuery();
-			}
+			_context.Cars.Add(car);
+			_context.SaveChanges();
 		}
 
-		// Обновление автомобиля
+		// Обновление автомобиля - ИСПРАВЛЕНО для EF6
 		public void Update(Car car)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_UpdateCar", conn))
+			var existingCar = _context.Cars.Find(car.CarID);
+			if (existingCar != null)
 			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@CarID", car.CarID);
-				cmd.Parameters.AddWithValue("@CarNumber", car.CarNumber);
-				cmd.Parameters.AddWithValue("@Make", car.Make);
-				cmd.Parameters.AddWithValue("@Mileage", car.Mileage);
-				cmd.Parameters.AddWithValue("@Status", car.Status);
-				cmd.Parameters.AddWithValue("@Seats", car.Seats);
-				cmd.Parameters.AddWithValue("@PricePerHour", car.PricePerHour);
-				conn.Open();
-				cmd.ExecuteNonQuery();
+				_context.Entry(existingCar).CurrentValues.SetValues(car);
+				_context.SaveChanges();
 			}
 		}
 
-		// Удаление автомобиля
 		public void Delete(int carId)
 		{
 			try
 			{
-				using (var conn = new SqlConnection(_connectionString))
-				using (var cmd = new SqlCommand("sp_DeleteCar", conn))
+				var car = _context.Cars.Find(carId);
+				if (car != null)
 				{
-					cmd.CommandType = CommandType.StoredProcedure;
-					cmd.Parameters.AddWithValue("@CarID", carId);
-					conn.Open();
-					cmd.ExecuteNonQuery();
+					bool hasOrders = _context.Orders.Any(o => o.CarID == carId);
+					if (hasOrders)
+					{
+						throw new Exception("Нельзя удалить автомобиль, так как у него есть заказы.");
+					}
+
+					_context.Cars.Remove(car);
+					_context.SaveChanges();
 				}
 			}
-			catch (SqlException ex) when (ex.Number == 547)
+			catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
 			{
-				throw new Exception("Нельзя удалить этот автомобиль, так как он связан с заказами.");
+				if (ex.InnerException?.Message?.Contains("REFERENCE") == true ||
+					ex.InnerException?.InnerException?.Message?.Contains("REFERENCE") == true)
+				{
+					throw new Exception("Нельзя удалить этот автомобиль, так как он связан с заказами.");
+				}
+				throw new Exception($"Ошибка при удалении автомобиля: {ex.Message}", ex);
 			}
 			catch (Exception ex)
 			{
@@ -157,81 +104,42 @@ namespace CarRental.Data
 			}
 		}
 
-		// Получить все доступные автомобили
 		public IEnumerable<Car> GetAvailableCars()
 		{
-			var list = new List<Car>();
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_GetAvailableCars", conn))
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				conn.Open();
-				using (var reader = cmd.ExecuteReader())
-				{
-					while (reader.Read())
-					{
-						list.Add(MapCar(reader));
-					}
-				}
-			}
-			return list;
+			return _context.Cars
+				.Where(c => c.Status == "Свободна")
+				.ToList();
 		}
 
-		// Обновление статуса автомобиля
 		public void UpdateCarStatus(int carId, string status)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_UpdateCarStatus", conn))
+			var car = _context.Cars.Find(carId);
+			if (car != null)
 			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@CarID", carId);
-				cmd.Parameters.AddWithValue("@Status", status);
-				conn.Open();
-				cmd.ExecuteNonQuery();
+				car.Status = status;
+				_context.SaveChanges();
 			}
 		}
+
 		public List<CarCurrentMonth> GetCarsCurrentMonth()
 		{
-			var cars = new List<CarCurrentMonth>();
+			var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+			var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_GetCarsCurrentMonth", conn))
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				conn.Open();
-
-				using (var reader = cmd.ExecuteReader())
+			var cars = _context.Cars
+				.Select(c => new CarCurrentMonth
 				{
-					while (reader.Read())
-					{
-						cars.Add(new CarCurrentMonth
-						{
-							CarID = (int)reader["CarID"],
-							CarNumber = reader["CarNumber"].ToString(),
-							Make = reader["Make"].ToString(),
-							TotalHoursThisMonth = (int)reader["TotalHoursThisMonth"]
-						});
-					}
-				}
-			}
+					CarID = c.CarID,
+					CarNumber = c.CarNumber,
+					Make = c.Make,
+					TotalHoursThisMonth = c.Orders
+						.Where(o => o.OrderDate >= startOfMonth && o.OrderDate <= endOfMonth)
+						.Sum(o => o.Hours)
+				})
+				.Where(c => c.TotalHoursThisMonth > 0)
+				.ToList();
 
 			return cars;
-		}
-
-
-		// Вспомогательный метод для маппинга Car из SqlDataReader
-		private Car MapCar(SqlDataReader reader)
-		{
-			return new Car
-			{
-				CarID = (int)reader["CarID"],
-				CarNumber = reader["CarNumber"].ToString(),
-				Make = reader["Make"].ToString(),
-				Mileage = (int)reader["Mileage"],
-				Status = reader["Status"].ToString(),
-				Seats = (int)reader["Seats"],
-				PricePerHour = (decimal)reader["PricePerHour"]
-			};
 		}
 	}
 }

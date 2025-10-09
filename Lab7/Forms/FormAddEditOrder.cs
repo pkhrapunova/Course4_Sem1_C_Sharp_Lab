@@ -123,8 +123,7 @@ namespace CarRental.UI
 
 					txtEmployee.Text = order.EmployeeFullName;
 					dtOrderDate.Value = order.OrderDate;
-					dtOrderTime.Value = DateTime.Today.Add(order.OrderTime);
-					dtReturnDate.Value = order.ReturnDate;
+					dtReturnDate.Value = (DateTime)order.ReturnDate;
 					numHours.Value = order.Hours;
 				}
 			}
@@ -213,7 +212,6 @@ namespace CarRental.UI
 					CarID = (int)cmbCar.SelectedValue,
 					EmployeeFullName = txtEmployee.Text.Trim(),
 					OrderDate = dtOrderDate.Value.Date,
-					OrderTime = new TimeSpan(dtOrderTime.Value.Hour, dtOrderTime.Value.Minute, dtOrderTime.Value.Second),
 					ReturnDate = dtReturnDate.Value.Date,
 					Hours = (int)numHours.Value
 				};

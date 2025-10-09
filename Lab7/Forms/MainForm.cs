@@ -14,7 +14,9 @@ namespace CarRental.UI
 		private readonly CustomerRepository _customerRepo;
 		private readonly CarRepository _carRepo;
 		private readonly OrderRepository _orderRepo;
+		private readonly ServiceRepository _serviceRepo;
 
+		private List<Service> _displayServices;
 		private List<Order> _allOrders;
 		private List<dynamic> _displayOrders;
 		private List<CarDisplayModel> _displayCars;
@@ -30,6 +32,7 @@ namespace CarRental.UI
 			_customerRepo = new CustomerRepository();
 			_carRepo = new CarRepository();
 			_orderRepo = new OrderRepository();
+			_serviceRepo = new ServiceRepository();
 
 			LoadAllData();
 		}
@@ -76,6 +79,7 @@ namespace CarRental.UI
 				LoadCustomers();
 				LoadCars();
 				LoadOrders();
+				LoadServices();
 
 				statusLabel.Text = "Данные успешно загружены";
 			}
@@ -85,6 +89,22 @@ namespace CarRental.UI
 				MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
 					MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+		private void LoadServices()
+		{
+			var services = _serviceRepo.GetAll().ToList();
+
+			_displayServices = services;
+
+			dgvServices.DataSource = _displayServices;
+
+			if (dgvServices.Columns.Contains("ServiceID"))
+				dgvServices.Columns["ServiceID"].Visible = false;
+
+			dgvServices.Columns["Name"].HeaderText = "Название услуги";
+			dgvServices.Columns["Price"].HeaderText = "Цена";
+
+			ConfigureGrid(dgvServices);
 		}
 
 		private void LoadCustomers()
@@ -153,41 +173,62 @@ namespace CarRental.UI
 
 		private void LoadOrders()
 		{
-			_allOrders = _orderRepo.GetAll().ToList();
+			try
+			{
+				_allOrders = _orderRepo.GetAll().ToList();
 
-			var customers = _customerRepo.GetAll().ToDictionary(c => c.CustomerID, c => c.FullName);
-			var cars = _carRepo.GetAll().ToDictionary(c => c.CarID, c => c.CarNumber);
+				var customers = _customerRepo.GetAll().ToDictionary(c => c.CustomerID, c => c.FullName);
+				var cars = _carRepo.GetAll().ToDictionary(c => c.CarID, c => c);
 
-			_displayOrders = _allOrders
-				.Select(o => new
-				{
-					o.OrderID,
-					OrderDate = o.OrderDate,
-					OrderTime = o.OrderTime,
-					EmployeeName = o.EmployeeFullName,
-					CustomerName = customers.ContainsKey(o.CustomerID) ? customers[o.CustomerID] : "Неизвестно",
-					CarNumber = cars.ContainsKey(o.CarID) ? cars[o.CarID] : "Неизвестно",
-					ReturnDate = o.ReturnDate,
-					Hours = o.Hours,
-					TotalPrice = o.Hours * 100
-				})
-				.ToList<dynamic>();
+				_displayOrders = _allOrders
+	.Select(o => new
+	{
+		o.OrderID,
+		OrderDate = o.OrderDate,
+		o.EmployeeFullName,
+		CustomerName = o.Customer?.FullName ?? "Неизвестно",
+		CarNumber = o.Car?.CarNumber ?? "Неизвестно",
+		Services = string.Join(", ", o.Services.Select(s => s.Name)),
+		Hours = o.Hours,
+		TotalPrice = (o.Car?.PricePerHour ?? 0) * o.Hours + o.Services.Sum(s => s.Price)
+	})
+	.ToList<dynamic>();
 
-			dgvOrders.DataSource = _displayOrders;
 
-			if (dgvOrders.Columns.Contains("OrderID"))
-				dgvOrders.Columns["OrderID"].Visible = false;
 
-			dgvOrders.Columns["OrderDate"].HeaderText = "Дата";
-			dgvOrders.Columns["OrderTime"].HeaderText = "Время";
-			dgvOrders.Columns["EmployeeName"].HeaderText = "Сотрудник";
-			dgvOrders.Columns["CustomerName"].HeaderText = "Клиент";
-			dgvOrders.Columns["CarNumber"].HeaderText = "Машина";
-			dgvOrders.Columns["ReturnDate"].HeaderText = "Возврат";
-			dgvOrders.Columns["Hours"].HeaderText = "Часы";
-			dgvOrders.Columns["TotalPrice"].HeaderText = "Стоимость";
+				dgvOrders.DataSource = _displayOrders;
 
-			ConfigureGrid(dgvOrders);
+				// ПРОВЕРКА НА NULL перед обращением к колонкам
+				if (dgvOrders.Columns["OrderID"] != null)
+					dgvOrders.Columns["OrderID"].Visible = false;
+
+				// Настройка заголовков с проверкой на null
+				SafeSetHeaderText(dgvOrders, "OrderDate", "Дата");
+				SafeSetHeaderText(dgvOrders, "OrderTime", "Время");
+				SafeSetHeaderText(dgvOrders, "EmployeeName", "Сотрудник");
+				SafeSetHeaderText(dgvOrders, "CustomerName", "Клиент");
+				SafeSetHeaderText(dgvOrders, "CarNumber", "Машина");
+				SafeSetHeaderText(dgvOrders, "ReturnDate", "Возврат");
+				SafeSetHeaderText(dgvOrders, "Hours", "Часы");
+				SafeSetHeaderText(dgvOrders, "TotalPrice", "Стоимость");
+				SafeSetHeaderText(dgvOrders, "Services", "Услуги");
+
+				ConfigureGrid(dgvOrders);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Ошибка при загрузке заказов: {ex.Message}", "Ошибка",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		// Вспомогательный метод для безопасной установки заголовков
+		private void SafeSetHeaderText(DataGridView grid, string columnName, string headerText)
+		{
+			if (grid.Columns[columnName] != null)
+			{
+				grid.Columns[columnName].HeaderText = headerText;
+			}
 		}
 
 		private void FormatOrdersGrid()
@@ -367,53 +408,39 @@ namespace CarRental.UI
 
 		#endregion
 
-		#region репорты
-		private void BtnReportAllOrders_Click(object sender, EventArgs e)
+		#region CRUD услуг
+		private void BtnAddService_Click(object sender, EventArgs e)
 		{
-			using (var sfd = new SaveFileDialog())
-			{
-				sfd.Filter = "Word Document|*.docx";
-				sfd.FileName = "AllCarsReport.docx";
-				if (sfd.ShowDialog() == DialogResult.OK)
-				{
-					var cars = _carRepo.GetAll().ToList();
-					WordReportGenerator.CreateAllCarsReport(sfd.FileName, cars);
-					MessageBox.Show("Отчет создан", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-			}
+			var form = new FormAddEditService(_serviceRepo);
+			if (form.ShowDialog() == DialogResult.OK)
+				LoadServices();
 		}
 
-		private void BtnReportByQuery_Click(object sender, EventArgs e)
+		private void BtnEditService_Click(object sender, EventArgs e)
 		{
-			using (var sfd = new SaveFileDialog())
-			{
-				sfd.Filter = "Word Document|*.docx";
-				sfd.FileName = "PopularCarsReport.docx";
-				if (sfd.ShowDialog() == DialogResult.OK)
-				{
-					var popularCars = _carRepo.GetPopularCars().ToList();
-					WordReportGenerator.CreatePopularCarsReport(sfd.FileName, popularCars);
-					MessageBox.Show("Отчет создан", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-			}
+			if (dgvServices.SelectedRows.Count == 0) return;
+
+			int serviceId = (int)dgvServices.SelectedRows[0].Cells["ServiceID"].Value;
+			var form = new FormAddEditService(_serviceRepo, serviceId);
+			if (form.ShowDialog() == DialogResult.OK)
+				LoadServices();
 		}
 
-		private void BtnReportGrouped_Click(object sender, EventArgs e)
+		private void BtnDeleteService_Click(object sender, EventArgs e)
 		{
-			using (var sfd = new SaveFileDialog())
+			if (dgvServices.SelectedRows.Count == 0) return;
+
+			var selected = (Service)dgvServices.SelectedRows[0].DataBoundItem;
+			if (MessageBox.Show($"Удалить услугу '{selected.Name}'?", "Подтверждение",
+				MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 			{
-				sfd.Filter = "Word Document|*.docx";
-				sfd.FileName = "CustomerSummaryReport.docx";
-				if (sfd.ShowDialog() == DialogResult.OK)
-				{
-					var reportData = _customerRepo.GetCustomerTotals().ToList();
-					WordReportGenerator.CreateCustomerSummaryReport(sfd.FileName, reportData);
-					MessageBox.Show("Отчет создан", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
+				_serviceRepo.Delete(selected.ServiceID);
+				LoadServices();
 			}
 		}
 		#endregion
-		
+
+
 		#region сортировки
 		private bool sortAscending = true;
 
@@ -440,7 +467,7 @@ namespace CarRental.UI
 			sortNameAscending = !sortNameAscending;
 			ConfigureGrid(dgvCustomers);
 		}
-		
+
 		private bool sortPriceAscending = true;
 
 		private void BtnSortByPrise_Click(object sender, EventArgs e)
@@ -458,33 +485,39 @@ namespace CarRental.UI
 
 		private void BtnLoadCurrentMonth_Click(object sender, EventArgs e)
 		{
-			var cars = _carRepo.GetCarsCurrentMonth();
-
-			dgvOrders.DataSource = null;
-			dgvOrders.DataSource = cars;
-			if (cars.Count == 0)
+			try
 			{
-				MessageBox.Show("Нет заказов на текущий месяц.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				dgvCars.DataSource = null; 
-				return;
+				var cars = _carRepo.GetCarsCurrentMonth();
+
+				if (cars.Count == 0)
+				{
+					MessageBox.Show("Нет заказов на текущий месяц.", "Информация",
+						MessageBoxButtons.OK, MessageBoxIcon.Information);
+					return;
+				}
+
+				dgvOrders.DataSource = cars;
+
+				// Настройка колонок
+				if (dgvOrders.Columns.Contains("CarID"))
+					dgvOrders.Columns["CarID"].Visible = false;
+
+				if (dgvOrders.Columns.Contains("CarNumber"))
+					dgvOrders.Columns["CarNumber"].HeaderText = "Номер машины";
+
+				if (dgvOrders.Columns.Contains("Make"))
+					dgvOrders.Columns["Make"].HeaderText = "Марка";
+
+				if (dgvOrders.Columns.Contains("TotalHoursThisMonth"))
+					dgvOrders.Columns["TotalHoursThisMonth"].HeaderText = "Часы аренды в текущем месяце";
+
+				ConfigureGrid(dgvOrders);
 			}
-
-
-			if (dgvOrders.Columns.Contains("CarID"))
-				dgvOrders.Columns["CarID"].Visible = false;
-
-			if (dgvOrders.Columns.Contains("CarNumber"))
-				dgvOrders.Columns["CarNumber"].HeaderText = "Номер машины";
-
-			if (dgvOrders.Columns.Contains("Make"))
-				dgvOrders.Columns["Make"].HeaderText = "Марка";
-
-			if (dgvOrders.Columns.Contains("TotalHoursThisMonth"))
-				dgvOrders.Columns["TotalHoursThisMonth"].HeaderText = "Часы аренды в текущем месяце";
-
-			dgvOrders.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
+					MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
-
-
 	}
 }

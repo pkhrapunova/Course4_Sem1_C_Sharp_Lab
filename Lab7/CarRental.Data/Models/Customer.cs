@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CarRental.Data.Models
 {
@@ -14,5 +10,7 @@ namespace CarRental.Data.Models
 		public string Address { get; set; }
 		public string Phone { get; set; }
 		public string DrivingLicense { get; set; }
+
+		public virtual ICollection<Order> Orders { get; set; }
 	}
 }

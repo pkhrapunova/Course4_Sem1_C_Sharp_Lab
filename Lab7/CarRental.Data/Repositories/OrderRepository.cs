@@ -1,138 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
+using System.Linq;
 using CarRental.Data.Models;
+using System.Data.Entity;
 
 namespace CarRental.Data
 {
 	public class OrderRepository : IRepository<Order>
 	{
-		private readonly string _connectionString;
+		private readonly CarRentalDbContext _context;
 
 		public OrderRepository()
 		{
-			_connectionString = ConfigurationManager.ConnectionStrings["CarRentalDb"].ConnectionString;
+			_context = new CarRentalDbContext();
 		}
 
 		// Получить все заказы
 		public IEnumerable<Order> GetAll()
 		{
-			var list = new List<Order>();
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_GetAllOrders", conn))
+			try
 			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				conn.Open();
-				using (var reader = cmd.ExecuteReader())
-				{
-					while (reader.Read())
-					{
-						list.Add(MapOrder(reader));
-					}
-				}
+				return _context.Orders.ToList();
 			}
-			return list;
+			catch (Exception ex)
+			{
+				throw new Exception($"Ошибка при загрузке заказов: {ex.Message}", ex);
+			}
 		}
 
 		// Получить заказ по ID
 		public Order GetById(int orderId)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_GetOrderById", conn))
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@OrderID", orderId);
-				conn.Open();
-				using (var reader = cmd.ExecuteReader())
-				{
-					if (reader.Read())
-					{
-						return MapOrder(reader);
-					}
-				}
-			}
-			return null;
+			return _context.Orders.Find(orderId);
 		}
 
 		// Добавление заказа
 		public void Insert(Order order)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_InsertOrder", conn))
-			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@CarID", order.CarID);
-				cmd.Parameters.AddWithValue("@CustomerID", order.CustomerID);
-				cmd.Parameters.AddWithValue("@EmployeeFullName", order.EmployeeFullName);
-				cmd.Parameters.AddWithValue("@OrderDate", order.OrderDate);
-				cmd.Parameters.AddWithValue("@OrderTime", order.OrderTime);
-				cmd.Parameters.AddWithValue("@ReturnDate", order.ReturnDate);
-				cmd.Parameters.AddWithValue("@Hours", order.Hours);
-				conn.Open();
-				cmd.ExecuteNonQuery();
-			}
+			_context.Orders.Add(order);
+			_context.SaveChanges();
 		}
 
-		// Обновление заказа
+		// Обновление заказа - ИСПРАВЛЕНО для EF6
 		public void Update(Order order)
 		{
-			using (var conn = new SqlConnection(_connectionString))
-			using (var cmd = new SqlCommand("sp_UpdateOrder", conn))
+			var existingOrder = _context.Orders.Find(order.OrderID);
+			if (existingOrder != null)
 			{
-				cmd.CommandType = CommandType.StoredProcedure;
-				cmd.Parameters.AddWithValue("@OrderID", order.OrderID);
-				cmd.Parameters.AddWithValue("@CarID", order.CarID);
-				cmd.Parameters.AddWithValue("@CustomerID", order.CustomerID);
-				cmd.Parameters.AddWithValue("@EmployeeFullName", order.EmployeeFullName);
-				cmd.Parameters.AddWithValue("@OrderDate", order.OrderDate);
-				cmd.Parameters.AddWithValue("@OrderTime", order.OrderTime);
-				cmd.Parameters.AddWithValue("@ReturnDate", order.ReturnDate);
-				cmd.Parameters.AddWithValue("@Hours", order.Hours);
-				conn.Open();
-				cmd.ExecuteNonQuery();
+				_context.Entry(existingOrder).CurrentValues.SetValues(order);
+				_context.SaveChanges();
 			}
 		}
 
-		// Удаление заказа
+		// Удаление заказа - ИСПРАВЛЕНО для EF6
 		public void Delete(int orderId)
 		{
 			try
 			{
-				using (var conn = new SqlConnection(_connectionString))
-				using (var cmd = new SqlCommand("sp_DeleteOrder", conn))
+				var order = _context.Orders.Find(orderId);
+				if (order != null)
 				{
-					cmd.CommandType = CommandType.StoredProcedure;
-					cmd.Parameters.AddWithValue("@OrderID", orderId);
-					conn.Open();
-					cmd.ExecuteNonQuery();
+					_context.Orders.Remove(order);
+					_context.SaveChanges();
 				}
 			}
-			catch (SqlException ex) when (ex.Number == 547)
+			catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
 			{
-				throw new Exception("Нельзя удалить этот заказ, так как он связан с другими данными.");
+				if (ex.InnerException?.Message?.Contains("REFERENCE") == true)
+				{
+					throw new Exception("Нельзя удалить этот заказ, так как он связан с другими данными.");
+				}
+				throw new Exception($"Ошибка при удалении заказа: {ex.Message}", ex);
 			}
 			catch (Exception ex)
 			{
 				throw new Exception($"Ошибка при удалении заказа: {ex.Message}", ex);
 			}
 		}
-
-		// Вспомогательный метод для маппинга
-		private Order MapOrder(SqlDataReader reader)
+		// Получить заказы за определенный период
+		public IEnumerable<Order> GetOrdersByDateRange(DateTime startDate, DateTime endDate)
 		{
-			return new Order
-			{
-				OrderID = (int)reader["OrderID"],
-				CarID = (int)reader["CarID"],
-				CustomerID = (int)reader["CustomerID"],
-				EmployeeFullName = reader["EmployeeFullName"].ToString(),
-				OrderDate = (DateTime)reader["OrderDate"],
-				OrderTime = (TimeSpan)reader["OrderTime"],
-				ReturnDate = (DateTime)reader["ReturnDate"],
-				Hours = (int)reader["Hours"]
-			};
+			return _context.Orders
+				.Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+				.ToList();
+		}
+
+		// Получить заказы конкретного клиента
+		public IEnumerable<Order> GetOrdersByCustomer(int customerId)
+		{
+			return _context.Orders
+				.Where(o => o.CustomerID == customerId)
+				.ToList();
 		}
 	}
 }

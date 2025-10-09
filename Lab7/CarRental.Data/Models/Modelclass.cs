@@ -1,0 +1,48 @@
+﻿namespace CarRental.Data.Models
+{
+	public class CarDisplayModel
+	{
+		public int CarID { get; set; }
+		public string CarNumber { get; set; }
+		public string Make { get; set; }
+		public int Mileage { get; set; }
+		public string Status { get; set; }
+		public int Seats { get; set; }
+		public decimal PricePerHour { get; set; }
+	}
+	public class CustomerDisplayModel
+	{
+		public int CustomerID { get; set; }
+		public string FullName { get; set; }
+		public string Passport { get; set; }
+		public string Address { get; set; }
+		public string Phone { get; set; }
+		public string DrivingLicense { get; set; }
+	}
+	public class PopularCar
+	{
+		public int CarID { get; set; }
+		public string CarNumber { get; set; }
+		public string Make { get; set; }
+		public string Status { get; set; }
+		public decimal PricePerHour { get; set; }
+		public int OrderCount { get; set; }
+		public int TotalRentalHours { get; set; }
+		public double AverageRentalHours { get; set; }
+	}
+	public class CarCurrentMonth
+	{
+		public int CarID { get; set; }
+		public string CarNumber { get; set; }
+		public string Make { get; set; }
+		public int TotalHoursThisMonth { get; set; }
+	}
+	public class CarService
+	{
+		public int CarID { get; set; }
+		public int ServiceID { get; set; }
+
+		public virtual Car Car { get; set; }
+		public virtual Service Service { get; set; }
+	}
+}

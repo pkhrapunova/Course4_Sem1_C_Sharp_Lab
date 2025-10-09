@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CarRental.Data.Models
 {
@@ -15,5 +11,8 @@ namespace CarRental.Data.Models
 		public string Status { get; set; }
 		public int Seats { get; set; }
 		public decimal PricePerHour { get; set; }
+
+		public virtual ICollection<CarService> CarServices { get; set; }
+		public virtual ICollection<Order> Orders { get; set; }
 	}
 }
