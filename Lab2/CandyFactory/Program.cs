@@ -24,7 +24,6 @@ namespace CandyFactory
 			// 9. Наследование, 12. Обобщения, 14. Наследование обобщений
 			var factories = new IFactory[] { chocolateFactory, lollipopFactory, toffeeFactory };
 
-			// 19. Демонстрация всех элементов
 			Console.WriteLine("Все конфеты на фабриках ");
 			foreach (var factory in factories)
 			{
@@ -41,7 +40,7 @@ namespace CandyFactory
 			expensiveChocolates.ForEachDo(c => Console.WriteLine(c));
 
 			// 15. Методы расширения
-			Utils.PrintHeader("Короткие метки конфет");
+			Utils.PrintHeader("Название на упаковке конфет");
 			chocolateFactory.GetAll().ForEachDo(c => Console.WriteLine(c.ShortLabel()));
 
 			// 5. Индексаторы
@@ -50,6 +49,7 @@ namespace CandyFactory
 			inventory.Add(chocolateFactory.GetAll().First());
 			inventory.Add(lollipopFactory.GetAll().First());
 			Console.WriteLine($"Первый элемент в инвентаре: {inventory[0]}");
+			Console.WriteLine($"Второй элемент в инвентаре: {inventory[1]}");
 
 			// Демонстрация SET в индексаторе
 			Utils.PrintHeader("Демонстрация SET в индексаторе");
@@ -95,7 +95,7 @@ namespace CandyFactory
 			Utils.PrintHeader("Демонстрация set с логикой в свойствах");
 			try
 			{
-				var invalidCandy = new Chocolate("   ", 50, 30, 60); // Раскомментировать для теста
+				var invalidCandy = new Chocolate("   ", 50, 30, 60); 
 			}
 			catch (Exception ex)
 			{
@@ -110,14 +110,9 @@ namespace CandyFactory
 			Utils.PrintHeader("Проверка качества через интерфейс");
 			foreach (var candy in toffeeFactory.GetAll())
 			{
-				IInspectable inspectable = candy; // Использование через интерфейс
+				IInspectable inspectable = candy; 
 				Console.WriteLine($"{candy.Name}: Проверка пройдена - {inspectable.Inspect()}");
 			}
-
-			// 14. Наследование обобщений с ограничениями
-			Utils.PrintHeader("Демонстрация ограничений обобщений");
-			Console.WriteLine("SpecialFactory<T> where T : CandyBase - работает корректно");
-
 
 			// 16. Агрегация (магазин использует фабрику)
 			var shop = new Shop("Сладкий мир", new Factory<CandyBase>("Основная фабрика"));

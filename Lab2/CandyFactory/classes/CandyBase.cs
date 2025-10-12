@@ -19,7 +19,6 @@ namespace CandyFactory
 				_name = value;
 			}
 		}
-
 		public double Weight
 		{
 			get => _weight;

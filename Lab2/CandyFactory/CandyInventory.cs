@@ -6,8 +6,7 @@ namespace CandyFactory
 {
 	public class CandyInventory : IEnumerable<CandyBase>
 	{
-		private List<CandyBase> _candies = new List<CandyBase>(); // encapsulated
-
+		private List<CandyBase> _candies = new List<CandyBase>(); 
 
 		public CandyBase this[int index]
 		{
