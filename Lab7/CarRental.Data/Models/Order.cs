@@ -15,13 +15,8 @@ namespace CarRental.Data.Models
 
 		public virtual Customer Customer { get; set; }
 		public virtual Car Car { get; set; }
-
-		public virtual ICollection<Service> Services { get; set; }
-
 		public Order()
 		{
-			Services = new HashSet<Service>();
 		}
 	}
-
 }

@@ -15,7 +15,6 @@ namespace CarRental.Data
 			_context = new CarRentalDbContext();
 		}
 
-		// Получить все автомобили
 		public IEnumerable<Car> GetAll()
 		{
 			try
@@ -27,51 +26,26 @@ namespace CarRental.Data
 				throw new Exception($"Ошибка при загрузке автомобилей: {ex.Message}", ex);
 			}
 		}
-
-		public List<PopularCar> GetPopularCars()
-		{
-			var popularCars = _context.Cars
-				.Select(c => new PopularCar
-				{
-					CarID = c.CarID,
-					CarNumber = c.CarNumber,
-					Make = c.Make,
-					Status = c.Status,
-					PricePerHour = c.PricePerHour,
-					OrderCount = c.Orders.Count,
-					TotalRentalHours = c.Orders.Sum(o => o.Hours),
-					AverageRentalHours = c.Orders.Any() ? c.Orders.Average(o => (double)o.Hours) : 0
-				})
-				.OrderByDescending(c => c.OrderCount)
-				.ToList();
-
-			return popularCars;
-		}
-
-		// Получить автомобиль по ID
-		public Car GetById(int carId)
-		{
-			return _context.Cars.Find(carId);
-		}
-
-		// Добавление автомобиля
 		public void Insert(Car car)
 		{
 			_context.Cars.Add(car);
 			_context.SaveChanges();
 		}
-
-		// Обновление автомобиля - ИСПРАВЛЕНО для EF6
 		public void Update(Car car)
 		{
 			var existingCar = _context.Cars.Find(car.CarID);
 			if (existingCar != null)
 			{
 				_context.Entry(existingCar).CurrentValues.SetValues(car);
+
+				_context.Entry(existingCar).State = EntityState.Modified;
 				_context.SaveChanges();
 			}
+			else
+			{
+				throw new ArgumentException($"Автомобиль с ID {car.CarID} не найден");
+			}
 		}
-
 		public void Delete(int carId)
 		{
 			try
@@ -103,14 +77,12 @@ namespace CarRental.Data
 				throw new Exception($"Ошибка при удалении автомобиля: {ex.Message}", ex);
 			}
 		}
-
 		public IEnumerable<Car> GetAvailableCars()
 		{
 			return _context.Cars
 				.Where(c => c.Status == "Свободна")
 				.ToList();
 		}
-
 		public void UpdateCarStatus(int carId, string status)
 		{
 			var car = _context.Cars.Find(carId);
@@ -120,7 +92,12 @@ namespace CarRental.Data
 				_context.SaveChanges();
 			}
 		}
-
+		public Car GetById(int carId)
+		{
+			return _context.Cars
+				.Include(c => c.Orders) 
+				.FirstOrDefault(c => c.CarID == carId);
+		}
 		public List<CarCurrentMonth> GetCarsCurrentMonth()
 		{
 			var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);

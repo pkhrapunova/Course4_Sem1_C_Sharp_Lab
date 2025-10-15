@@ -11,8 +11,6 @@ namespace CarRental.Data.Models
 		public string Status { get; set; }
 		public int Seats { get; set; }
 		public decimal PricePerHour { get; set; }
-
-		public virtual ICollection<CarService> CarServices { get; set; }
 		public virtual ICollection<Order> Orders { get; set; }
 	}
 }

@@ -19,30 +19,11 @@
 		public string Phone { get; set; }
 		public string DrivingLicense { get; set; }
 	}
-	public class PopularCar
-	{
-		public int CarID { get; set; }
-		public string CarNumber { get; set; }
-		public string Make { get; set; }
-		public string Status { get; set; }
-		public decimal PricePerHour { get; set; }
-		public int OrderCount { get; set; }
-		public int TotalRentalHours { get; set; }
-		public double AverageRentalHours { get; set; }
-	}
 	public class CarCurrentMonth
 	{
 		public int CarID { get; set; }
 		public string CarNumber { get; set; }
 		public string Make { get; set; }
 		public int TotalHoursThisMonth { get; set; }
-	}
-	public class CarService
-	{
-		public int CarID { get; set; }
-		public int ServiceID { get; set; }
-
-		public virtual Car Car { get; set; }
-		public virtual Service Service { get; set; }
 	}
 }

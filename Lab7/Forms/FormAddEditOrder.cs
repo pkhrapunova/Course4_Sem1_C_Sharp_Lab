@@ -17,7 +17,6 @@ namespace CarRental.UI
 		private ComboBox cmbCar;
 		private TextBox txtEmployee;
 		private DateTimePicker dtOrderDate;
-		private DateTimePicker dtOrderTime;
 		private DateTimePicker dtReturnDate;
 		private NumericUpDown numHours;
 		private Label lblTotalPrice;
@@ -43,7 +42,6 @@ namespace CarRental.UI
 			cmbCar = new ComboBox { Top = 40, Left = 150, Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
 			txtEmployee = new TextBox { Top = 70, Left = 150, Width = 200 };
 			dtOrderDate = new DateTimePicker { Top = 100, Left = 150, Width = 200 };
-			dtOrderTime = new DateTimePicker { Top = 130, Left = 150, Width = 200, Format = DateTimePickerFormat.Time, ShowUpDown = true };
 			dtReturnDate = new DateTimePicker { Top = 160, Left = 150, Width = 200 };
 			numHours = new NumericUpDown { Top = 190, Left = 150, Width = 200, Minimum = 1, Maximum = 1000 };
 			lblTotalPrice = new Label { Top = 220, Left = 150, Width = 200, Text = "Общая стоимость: 0 руб." };
@@ -62,7 +60,6 @@ namespace CarRental.UI
 			Controls.Add(new Label { Text = "Машина:*", Top = 40, Left = 10 });
 			Controls.Add(new Label { Text = "Сотрудник:*", Top = 70, Left = 10 });
 			Controls.Add(new Label { Text = "Дата заказа:*", Top = 100, Left = 10 });
-			Controls.Add(new Label { Text = "Время заказа:*", Top = 130, Left = 10 });
 			Controls.Add(new Label { Text = "Дата возврата:*", Top = 160, Left = 10 });
 			Controls.Add(new Label { Text = "Часы:*", Top = 190, Left = 10 });
 			Controls.Add(new Label { Text = "Стоимость:", Top = 220, Left = 10 });
@@ -71,7 +68,6 @@ namespace CarRental.UI
 			Controls.Add(cmbCar);
 			Controls.Add(txtEmployee);
 			Controls.Add(dtOrderDate);
-			Controls.Add(dtOrderTime);
 			Controls.Add(dtReturnDate);
 			Controls.Add(numHours);
 			Controls.Add(lblTotalPrice);

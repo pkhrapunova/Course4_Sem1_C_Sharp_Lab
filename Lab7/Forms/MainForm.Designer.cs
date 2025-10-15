@@ -49,13 +49,8 @@
 			this.btnAddOrder = new System.Windows.Forms.Button();
 			this.btnEditOrder = new System.Windows.Forms.Button();
 			this.btnDeleteOrder = new System.Windows.Forms.Button();
-			this.tabService = new System.Windows.Forms.TabPage();
-			this.BtnAddService = new System.Windows.Forms.Button();
-			this.BtnEditService = new System.Windows.Forms.Button();
-			this.BtnDeleteService = new System.Windows.Forms.Button();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-			this.dgvServices = new System.Windows.Forms.DataGridView();
 			this.tabControlMain.SuspendLayout();
 			this.tabCustomers.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvCustomers)).BeginInit();
@@ -63,9 +58,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.dgvCars)).BeginInit();
 			this.tabOrders.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dgvOrders)).BeginInit();
-			this.tabService.SuspendLayout();
 			this.statusStrip.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.dgvServices)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tabControlMain
@@ -73,7 +66,6 @@
 			this.tabControlMain.Controls.Add(this.tabCustomers);
 			this.tabControlMain.Controls.Add(this.tabCars);
 			this.tabControlMain.Controls.Add(this.tabOrders);
-			this.tabControlMain.Controls.Add(this.tabService);
 			this.tabControlMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabControlMain.Location = new System.Drawing.Point(0, 0);
 			this.tabControlMain.Name = "tabControlMain";
@@ -329,44 +321,6 @@
 			this.btnDeleteOrder.Text = "Удалить";
 			this.btnDeleteOrder.Click += new System.EventHandler(this.BtnDeleteOrder_Click);
 			// 
-			// tabService
-			// 
-			this.tabService.Controls.Add(this.dgvServices);
-			this.tabService.Controls.Add(this.BtnAddService);
-			this.tabService.Controls.Add(this.BtnEditService);
-			this.tabService.Controls.Add(this.BtnDeleteService);
-			this.tabService.Location = new System.Drawing.Point(4, 22);
-			this.tabService.Name = "tabService";
-			this.tabService.Padding = new System.Windows.Forms.Padding(3);
-			this.tabService.Size = new System.Drawing.Size(1092, 596);
-			this.tabService.TabIndex = 3;
-			this.tabService.Text = "Услуги";
-			// 
-			// BtnAddService
-			// 
-			this.BtnAddService.Location = new System.Drawing.Point(6, 567);
-			this.BtnAddService.Name = "BtnAddService";
-			this.BtnAddService.Size = new System.Drawing.Size(75, 23);
-			this.BtnAddService.TabIndex = 4;
-			this.BtnAddService.Text = "Добавить";
-			this.BtnAddService.Click += new System.EventHandler(this.BtnAddService_Click);
-			// 
-			// BtnEditService
-			// 
-			this.BtnEditService.Location = new System.Drawing.Point(106, 567);
-			this.BtnEditService.Name = "BtnEditService";
-			this.BtnEditService.Size = new System.Drawing.Size(75, 23);
-			this.BtnEditService.TabIndex = 5;
-			this.BtnEditService.Text = "Изменить";
-			// 
-			// BtnDeleteService
-			// 
-			this.BtnDeleteService.Location = new System.Drawing.Point(206, 567);
-			this.BtnDeleteService.Name = "BtnDeleteService";
-			this.BtnDeleteService.Size = new System.Drawing.Size(75, 23);
-			this.BtnDeleteService.TabIndex = 6;
-			this.BtnDeleteService.Text = "Удалить";
-			// 
 			// statusStrip
 			// 
 			this.statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
@@ -381,19 +335,6 @@
 			// 
 			this.statusLabel.Name = "statusLabel";
 			this.statusLabel.Size = new System.Drawing.Size(0, 17);
-			// 
-			// dataGridView1
-			// 
-			this.dgvServices.AllowUserToAddRows = false;
-			this.dgvServices.AllowUserToDeleteRows = false;
-			this.dgvServices.ColumnHeadersHeight = 34;
-			this.dgvServices.Location = new System.Drawing.Point(16, 68);
-			this.dgvServices.Name = "dataGridView1";
-			this.dgvServices.ReadOnly = true;
-			this.dgvServices.RowHeadersWidth = 62;
-			this.dgvServices.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.dgvServices.Size = new System.Drawing.Size(1060, 460);
-			this.dgvServices.TabIndex = 7;
 			// 
 			// MainForm
 			// 
@@ -410,10 +351,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.dgvCars)).EndInit();
 			this.tabOrders.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dgvOrders)).EndInit();
-			this.tabService.ResumeLayout(false);
 			this.statusStrip.ResumeLayout(false);
 			this.statusStrip.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.dgvServices)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -452,10 +391,5 @@
 		private System.Windows.Forms.Button btnSortByName;
 		private System.Windows.Forms.Button btnSortByPrise;
 		private System.Windows.Forms.Button BtnLoadCurrentMonth;
-		private System.Windows.Forms.TabPage tabService;
-		private System.Windows.Forms.Button BtnAddService;
-		private System.Windows.Forms.Button BtnEditService;
-		private System.Windows.Forms.Button BtnDeleteService;
-		private System.Windows.Forms.DataGridView dgvServices;
 	}
 }

@@ -12,8 +12,6 @@ namespace CarRental.Data
 		public DbSet<Car> Cars { get; set; }
 		public DbSet<Customer> Customers { get; set; }
 		public DbSet<Order> Orders { get; set; }
-		public DbSet<Service> Services { get; set; }
-		public DbSet<CarService> CarServices { get; set; }
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
@@ -71,22 +69,6 @@ namespace CarRental.Data
 				.WithMany(c => c.Orders)
 				.HasForeignKey(o => o.CarID);
 
-			// -------------------------
-			// Многие-ко-многим: Car ↔ Service через CarService
-			// -------------------------
-			modelBuilder.Entity<CarService>()
-				.HasKey(cs => new { cs.CarID, cs.ServiceID });
-
-			modelBuilder.Entity<CarService>()
-				.HasRequired(cs => cs.Car)
-				.WithMany(c => c.CarServices)
-				.HasForeignKey(cs => cs.CarID);
-
-			modelBuilder.Entity<CarService>()
-				.HasRequired(cs => cs.Service)
-				.WithMany(s => s.CarServices)
-				.HasForeignKey(cs => cs.ServiceID);
 		}
-
 	}
 }

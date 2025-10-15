@@ -81,12 +81,6 @@
     <Compile Include="Forms\FormAddEditOrder.Designer.cs">
       <DependentUpon>FormAddEditOrder.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormAddEditService.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormAddEditService.Designer.cs">
-      <DependentUpon>FormAddEditService.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

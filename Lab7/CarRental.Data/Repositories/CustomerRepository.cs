@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CarRental.Data.Models;
+using System.Data.Entity;
 
 namespace CarRental.Data
 {
@@ -13,8 +14,6 @@ namespace CarRental.Data
 		{
 			_context = new CarRentalDbContext();
 		}
-
-		// Получить всех клиентов
 		public IEnumerable<Customer> GetAll()
 		{
 			try
@@ -26,21 +25,17 @@ namespace CarRental.Data
 				throw new Exception($"Ошибка при загрузке клиентов: {ex.Message}", ex);
 			}
 		}
-
-		// Получить клиента по ID
 		public Customer GetById(int id)
 		{
-			return _context.Customers.Find(id);
+			return _context.Customers
+				.Include(c => c.Orders) 
+				.FirstOrDefault(c => c.CustomerID == id);
 		}
-
-		// Добавление клиента
 		public void Insert(Customer entity)
 		{
 			_context.Customers.Add(entity);
 			_context.SaveChanges();
 		}
-
-		// Обновление клиента - ИСПРАВЛЕНО для EF6
 		public void Update(Customer entity)
 		{
 			var existingCustomer = _context.Customers.Find(entity.CustomerID);
@@ -49,9 +44,11 @@ namespace CarRental.Data
 				_context.Entry(existingCustomer).CurrentValues.SetValues(entity);
 				_context.SaveChanges();
 			}
+			else
+			{
+				throw new ArgumentException($"Клиент с ID {entity.CustomerID} не найден");
+			}
 		}
-
-		// Удаление клиента - ИСПРАВЛЕНО для EF6
 		public void Delete(int id)
 		{
 			try
@@ -59,7 +56,6 @@ namespace CarRental.Data
 				var customer = _context.Customers.Find(id);
 				if (customer != null)
 				{
-					// Явная проверка на наличие заказов
 					bool hasOrders = _context.Orders.Any(o => o.CustomerID == id);
 					if (hasOrders)
 					{
@@ -83,6 +79,36 @@ namespace CarRental.Data
 			{
 				throw new Exception($"Ошибка при удалении клиента: {ex.Message}", ex);
 			}
+		}
+		public IEnumerable<dynamic> GetTopSpendingCustomers()
+		{
+			return _context.Customers
+				.Select(c => new
+				{
+					CustomerID = c.CustomerID,
+					FullName = c.FullName,
+					TotalOrders = c.Orders.Count,
+					TotalSpent = c.Orders.Sum(o => o.Hours * o.Car.PricePerHour)
+				})
+				.OrderByDescending(x => x.TotalSpent)
+				.Take(10)
+				.ToList();
+		}
+		public IEnumerable<dynamic> GetCustomersWithOrdersThisMonth()
+		{
+			var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+			var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+			return _context.Customers
+				.Where(c => c.Orders.Any(o => o.OrderDate >= startOfMonth && o.OrderDate <= endOfMonth))
+				.Select(c => new
+				{
+					CustomerID = c.CustomerID,
+					FullName = c.FullName,
+					Phone = c.Phone,
+					OrderCount = c.Orders.Count(o => o.OrderDate >= startOfMonth && o.OrderDate <= endOfMonth)
+				})
+				.ToList();
 		}
 	}
 }
