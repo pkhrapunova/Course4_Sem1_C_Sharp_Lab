@@ -13,7 +13,7 @@ namespace CarRental.UI
 
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 			Application.ThreadException += (s, e) =>
-				ShowError("Необработанная ошибка приложения", e.Exception);
+				ShowError("Ошибка", e.Exception);
 			AppDomain.CurrentDomain.UnhandledException += (s, e) =>
 				ShowError("Критическая ошибка домена приложения", e.ExceptionObject as Exception);
 
