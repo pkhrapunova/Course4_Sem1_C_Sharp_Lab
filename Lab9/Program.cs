@@ -1,138 +1,195 @@
-﻿using System;
-using System.Threading;
-using System.Collections.Generic;
-
-public class SavageFeast
+﻿public class Program
 {
-	// Количество дикарей
-	private const int NumSavages = 5;
-	// Вместимость горшка
-	private const int PotCapacity = 10;
-	// Количество еды, которую готовит повар
-	private const int CookBatchSize = 10;
+	private static int _maxStews; 
+	private static int _currentStews; 
 
-	// Семафор для доступа к горшку
-	private static SemaphoreSlim _potMutex = new SemaphoreSlim(1, 1);
-	// Семафор для дикарей, чтобы ждать еду
-	private static SemaphoreSlim _savageWaiting = new SemaphoreSlim(0);
-	// Семафор для повара, чтобы спать
-	private static SemaphoreSlim _cookSleeping = new SemaphoreSlim(0);
+	private static SemaphoreSlim _potAccessSemaphore;
 
-	// Глобальная переменная для отслеживания еды в горшке
-	private static int _foodInPot = 0;
+	private static SemaphoreSlim _cookWakeUpSemaphore;
+
+	private static SemaphoreSlim _foodAvailableSemaphore;
+
+	private static readonly object _consoleLock = new object();
+
+	private static CancellationTokenSource _cts = new CancellationTokenSource();
 
 	public static void Main(string[] args)
 	{
-		Console.WriteLine("Начало обеда дикарей...");
+		Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-		// Запуск потока повара
-		Thread cookThread = new Thread(Cook);
-		cookThread.Start();
+		Console.WriteLine("--- Начало обеда дикарей ---");
 
-		// Запуск потоков дикарей
-		List<Thread> savageThreads = new List<Thread>();
-		for (int i = 0; i < NumSavages; i++)
+		int numSavages;
+		while (true)
 		{
-			int savageId = i + 1;
-			Thread savageThread = new Thread(() => Savage(savageId));
+			Console.Write("Введите количество дикарей (n): ");
+			if (int.TryParse(Console.ReadLine(), out numSavages) && numSavages > 0)
+			{
+				break;
+			}
+			Console.WriteLine("Некорректный ввод. Введите положительное целое число.");
+		}
+
+		while (true)
+		{
+			Console.Write("Введите вместимость горшка (m): ");
+			if (int.TryParse(Console.ReadLine(), out _maxStews) && _maxStews > 0)
+			{
+				break;
+			}
+			Console.WriteLine("Некорректный ввод. Введите положительное целое число.");
+		}
+
+		_currentStews = _maxStews; 
+
+
+		_potAccessSemaphore = new SemaphoreSlim(1, 1); 
+		_cookWakeUpSemaphore = new SemaphoreSlim(0, 1);
+		_foodAvailableSemaphore = new SemaphoreSlim(_maxStews, _maxStews);
+
+		List<Thread> savageThreads = new List<Thread>();
+		for (int i = 0; i < numSavages; i++)
+		{
+			Thread savageThread = new Thread(() => SavageEat(i + 1, _cts.Token));
+			savageThread.Name = $"Дикарь {i + 1}";
 			savageThreads.Add(savageThread);
 			savageThread.Start();
 		}
 
-		// Ждем завершения (в данном случае бесконечный цикл)
-		cookThread.Join();
-		foreach (var thread in savageThreads)
-		{
-			thread.Join();
-		}
+		Thread cookThread = new Thread(() => CookFood(_cts.Token));
+		cookThread.Name = "Повар";
+		cookThread.Start();
 
-		Console.WriteLine("Обед дикарей завершен.");
+		lock (_consoleLock)
+		{
+			Console.WriteLine("\n--- Начало обеда ---\n");
+		}
+		Console.ReadKey();
+
+		_cts.Cancel();
+
+		savageThreads.ForEach(t => t.Join());
+		cookThread.Join();
+
+		lock (_consoleLock)
+		{
+			Console.WriteLine("\nКонец работы");
+		}
 	}
 
-	private static void Cook()
+	/// <summary>
+	/// Метод, моделирующий поведение дикаря.
+	/// </summary>
+	/// <param name="savageId">Идентификатор дикаря.</param>
+	/// <param name="cancellationToken">Токен отмены для контролируемого завершения.</param>
+	private static void SavageEat(int savageId, CancellationToken cancellationToken)
 	{
-		while (true)
-		{
-			// Повар спит, пока его не разбудят
-			_cookSleeping.Wait();
-			Console.WriteLine("\nПовар проснулся и начинает готовить...");
-			// Имитация процесса приготовления
-			Thread.Sleep(TimeSpan.FromSeconds(new Random().NextDouble() * 2 + 1)); // От 1 до 3 секунд
+		Random random = new Random(savageId * Environment.TickCount); // Разный seed для каждого дикаря
 
-			_potMutex.Wait(); // Захватываем мьютекс горшка
+		while (!cancellationToken.IsCancellationRequested)
+		{
 			try
 			{
-				_foodInPot = CookBatchSize;
-				Console.WriteLine($"Повар наполнил горшок. Теперь в горшке {_foodInPot} кусков.");
-			}
-			finally
-			{
-				_potMutex.Release(); // Освобождаем мьютекс горшка
-			}
+				// Дикарь ждет, пока появится порция еды.
+				// Если _foodAvailableSemaphore равен 0, дикарь будет ждать здесь.
+				_foodAvailableSemaphore.Wait(cancellationToken);
 
-			// Разбудить всех дикарей, которые ждали
-			// Внимание: Release() может вызвать исключение, если значение больше MaxCount
-			// Однако, поскольку savageWaiting.Wait() уменьшает его, здесь это безопасно.
-			// Можно использовать цикл для Release, чтобы избежать превышения MaxCount, если MaxCount ограничен.
-			// Для SemaphoreSlim это не так критично, как для старого Semaphore.
-			_savageWaiting.Release(NumSavages);
-			Console.WriteLine("Повар приготовил еду и заснул.");
+				// Дикарь получил "разрешение" на еду, теперь нужно взять доступ к горшку
+				_potAccessSemaphore.Wait(cancellationToken);
+
+				// Теперь мы внутри критической секции (доступ к горшку).
+				// В этом месте _currentStews не может быть 0,
+				// потому что _foodAvailableSemaphore.Wait() уже прошел.
+				_currentStews--;
+				lock (_consoleLock)
+				{
+					Console.WriteLine($"{Thread.CurrentThread.Name}: Ем кусок. Осталось кусков: {_currentStews}");
+
+					if (_currentStews == 0) 
+					{
+						Console.WriteLine($"{Thread.CurrentThread.Name}: Горшок пуст. Бужу повара!");
+						_cookWakeUpSemaphore.Release(); // Разбудить повара
+					}
+				}
+
+				_potAccessSemaphore.Release(); // Освобождаем горшок
+
+
+				Thread.Sleep(random.Next(500, 1500));
+			}
+			catch (OperationCanceledException)
+			{
+				lock (_consoleLock)
+				{
+					Console.WriteLine($"{Thread.CurrentThread.Name}: Завершаю работу (отмена).");
+				}
+				break; 
+			}
+			catch (Exception ex)
+			{
+				lock (_consoleLock)
+				{
+					Console.WriteLine($" Ошибка в потоке {Thread.CurrentThread.Name}: {ex.Message}");
+				}
+			}
 		}
 	}
 
-	private static void Savage(int savageId)
+	/// <summary>
+	/// Метод, моделирующий поведение повара.
+	/// </summary>
+	/// <param name="cancellationToken">Токен отмены для контролируемого завершения.</param>
+	private static void CookFood(CancellationToken cancellationToken)
 	{
-		while (true)
-		{
-			Console.WriteLine($"Дикарь {savageId} хочет есть.");
+		Random random = new Random(Environment.TickCount + 100); // Разный seed
 
-			bool ate = false;
-			while (!ate)
+		while (!cancellationToken.IsCancellationRequested)
+		{
+			try
 			{
-				_potMutex.Wait(); // Захватываем мьютекс горшка
-				try
+				// Повар ждет, пока его не разбудят дикари.
+				// _cookWakeUpSemaphore.Wait() будет блокироваться, пока дикарь не вызовет Release().
+				_cookWakeUpSemaphore.Wait(cancellationToken);
+
+				lock (_consoleLock)
 				{
-					if (_foodInPot == 0)
-					{
-						Console.WriteLine($"Дикарь {savageId} обнаружил, что горшок пуст. Будит повара и ждет.");
-						// Разбудить повара
-						_cookSleeping.Release();
-						// Дикарь отпускает мьютекс и ждет еду
-						_potMutex.Release();
-						_savageWaiting.Wait(); // Ждет, пока повар не приготовит еду
-					}
-					else
-					{
-						_foodInPot--;
-						Console.WriteLine($"Дикарь {savageId} съел кусок. Осталось {_foodInPot} кусков.");
-						ate = true;
-						// Имитация процесса еды
-						Thread.Sleep(TimeSpan.FromSeconds(new Random().NextDouble() * 0.5 + 0.1)); // От 0.1 до 0.6 секунд
-					}
+					Console.WriteLine($"{Thread.CurrentThread.Name}: Меня разбудили. Готовлю еду...");
 				}
-				finally
+				Thread.Sleep(random.Next(2000, 4000)); 
+
+				_potAccessSemaphore.Wait(cancellationToken);
+				_currentStews = _maxStews;
+				lock (_consoleLock)
 				{
-					if (!ate) // Если не ел, то мьютекс должен быть освобожден в этом блоке
-					{
-						// Если дикарь ждал, он уже отпустил мьютекс перед _savageWaiting.Wait()
-						// Если он все еще в цикле проверки (т.е. _foodInPot был не 0, но потом стал 0 до его еды),
-						// то мьютекс должен быть освобожден.
-						// Этот finally блок гарантирует, что мьютекс освобождается, если он был захвачен.
-						// В случае, если дикарь ждет повара, он уже освобождает мьютекс явно.
-						// Поэтому здесь нужно быть осторожным, чтобы не освободить его дважды.
-						// Простая проверка состояния мьютекса невозможна для SemaphoreSlim.
-						// Лучший подход - гарантировать, что Release() вызывается только один раз на Wait().
-						// В текущей логике, если _foodInPot == 0, мы освобождаем мьютекс до _savageWaiting.Wait().
-						// Если _foodInPot > 0, мы его освобождаем после еды.
-						// Это выглядит корректно.
-					}
+					Console.WriteLine($"{Thread.CurrentThread.Name} : Наполнил горшок. Теперь ");
 				}
-				if (ate)
+				_potAccessSemaphore.Release(); 
+
+				// Теперь, когда горшок наполнен, повар должен "разрешить" дикарям снова есть.
+				// Он должен вызвать _foodAvailableSemaphore.Release() _maxStews_ раз,
+				// чтобы все дикари, которые ждали на _foodAvailableSemaphore.Wait(), могли продолжить.
+				_foodAvailableSemaphore.Release(_maxStews);
+
+				lock (_consoleLock)
 				{
-					_potMutex.Release(); // Освобождаем мьютекс горшка после еды
+					Console.WriteLine($"{Thread.CurrentThread.Name}: Засыпаю...");
 				}
 			}
-			Thread.Sleep(TimeSpan.FromSeconds(new Random().NextDouble() * 1 + 0.5)); // От 0.5 до 1.5 секунд до следующего голода
+			catch (OperationCanceledException)
+			{
+				lock (_consoleLock)
+				{
+					Console.WriteLine($"{Thread.CurrentThread.Name}: Завершаю работу (отмена).");
+				}
+				break; 
+			}
+			catch (Exception ex)
+			{
+				lock (_consoleLock)
+				{
+					Console.WriteLine($" Ошибка в потоке {Thread.CurrentThread.Name}: {ex.Message}");
+				}
+			}
 		}
 	}
 }
