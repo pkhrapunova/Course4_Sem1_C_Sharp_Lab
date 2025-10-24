@@ -1,64 +1,55 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 
-public class AsyncAwaitDemo
+namespace AsyncAwaitDemo
 {
-	public static async Task Main(string[] args)
+	internal class Program
 	{
-		Console.WriteLine($"[Main Thread: {Thread.CurrentThread.ManagedThreadId}] Приложение запущено. Начало асинхронных операций...");
-		Stopwatch stopwatch = Stopwatch.StartNew();
+		static async Task Main(string[] args)
+		{
+			int result = await GetNumberAsync();
+			Console.WriteLine($"Результат из GetNumberAsync: {result}\n");
 
-		// Запуск нескольких асинхронных операций
-		Task<string> dataTask = LoadDataAsync();
-		Task<bool> processImageTask = ProcessImageAsync();
-		Task<string> sendNotificationTask = SendNotificationAsync("Операции начаты!");
+			await DoWorkAsync();
 
-		// Можно выполнять какую-то другую работу здесь, пока асинхронные задачи выполняются
-		Console.WriteLine($"[Main Thread: {Thread.CurrentThread.ManagedThreadId}] Основной поток продолжает работу, пока ждут асинхронные задачи...");
-		await Task.Delay(500); // Имитация какой-то короткой работы в основном потоке
+			string message = await GetMessageAsync("Асинхронный метод");
+			Console.WriteLine(message);
 
-		// Ожидание завершения всех задач и получение их результатов
-		string loadedData = await dataTask;
-		bool imageProcessed = await processImageTask;
-		string notificationResult = await sendNotificationTask;
+			Console.WriteLine("\nЗапуск нескольких задач параллельно:");
+			Task<int> t1 = GetNumberAfterDelayAsync(1);
+			Task<int> t2 = GetNumberAfterDelayAsync(2);
+			Task<int> t3 = GetNumberAfterDelayAsync(3);
 
-		Console.WriteLine($"[Main Thread: {Thread.CurrentThread.ManagedThreadId}] Все асинхронные операции завершены.");
-		Console.WriteLine($"[Main Thread: {Thread.CurrentThread.ManagedThreadId}] Результаты:");
-		Console.WriteLine($"- Загруженные данные: {loadedData}");
-		Console.WriteLine($"- Изображение обработано: {imageProcessed}");
-		Console.WriteLine($"- Результат уведомления: {notificationResult}");
+			int[] results = await Task.WhenAll(t1, t2, t3);
+			Console.WriteLine($"Сумма результатов: {results[0] + results[1] + results[2]}");
+		}
 
-		stopwatch.Stop();
-		Console.WriteLine($"[Main Thread: {Thread.CurrentThread.ManagedThreadId}] Общее время выполнения: {stopwatch.ElapsedMilliseconds} мс.");
-		Console.WriteLine($"[Main Thread: {Thread.CurrentThread.ManagedThreadId}] Приложение завершено.");
-	}
+		static async Task<int> GetNumberAsync()
+		{
+			Console.WriteLine("Начало GetNumberAsync...");
+			await Task.Delay(1000); 
+			Console.WriteLine("Окончание GetNumberAsync.");
+			return 42;
+		}
 
-	// Асинхронный метод для имитации загрузки данных
-	static async Task<string> LoadDataAsync()
-	{
-		Console.WriteLine($"[Task: {Task.CurrentId}, Thread: {Thread.CurrentThread.ManagedThreadId}] Начинается загрузка данных...");
-		await Task.Delay(2000); // Имитация длительной операции ввода/вывода (например, сетевой запрос)
-		Console.WriteLine($"[Task: {Task.CurrentId}, Thread: {Thread.CurrentThread.ManagedThreadId}] Загрузка данных завершена.");
-		return "Некоторые данные из базы данных.";
-	}
+		static async Task DoWorkAsync()
+		{
+			Console.WriteLine("Начало DoWorkAsync...");
+			await Task.Delay(1500);
+			Console.WriteLine("Окончание DoWorkAsync.\n");
+		}
 
-	// Асинхронный метод для имитации обработки изображения
-	static async Task<bool> ProcessImageAsync()
-	{
-		Console.WriteLine($"[Task: {Task.CurrentId}, Thread: {Thread.CurrentThread.ManagedThreadId}] Начинается обработка изображения...");
-		await Task.Delay(3000); // Имитация длительной операции вычислений
-		Console.WriteLine($"[Task: {Task.CurrentId}, Thread: {Thread.CurrentThread.ManagedThreadId}] Обработка изображения завершена.");
-		return true;
-	}
+		static async Task<string> GetMessageAsync(string text)
+		{
+			await Task.Delay(1000);
+			return $"Сообщение получено: {text}";
+		}
 
-	// Асинхронный метод для имитации отправки уведомления
-	static async Task<string> SendNotificationAsync(string message)
-	{
-		Console.WriteLine($"[Task: {Task.CurrentId}, Thread: {Thread.CurrentThread.ManagedThreadId}] Начинается отправка уведомления: '{message}'...");
-		await Task.Delay(1500); // Имитация короткой сетевой операции
-		Console.WriteLine($"[Task: {Task.CurrentId}, Thread: {Thread.CurrentThread.ManagedThreadId}] Уведомление отправлено.");
-		return "Уведомление успешно отправлено.";
+		static async Task<int> GetNumberAfterDelayAsync(int number)
+		{
+			await Task.Delay(1000 * number);
+			Console.WriteLine($"GetNumberAfterDelayAsync({number}) завершён.");
+			return number * 10;
+		}
 	}
 }
