@@ -77,29 +77,18 @@
 		}
 	}
 
-	/// <summary>
-	/// Метод, моделирующий поведение дикаря.
-	/// </summary>
-	/// <param name="savageId">Идентификатор дикаря.</param>
-	/// <param name="cancellationToken">Токен отмены для контролируемого завершения.</param>
+	
 	private static void SavageEat(int savageId, CancellationToken cancellationToken)
 	{
-		Random random = new Random(savageId * Environment.TickCount); // Разный seed для каждого дикаря
+		Random random = new Random(savageId * Environment.TickCount);
 
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
 			{
-				// Дикарь ждет, пока появится порция еды.
-				// Если _foodAvailableSemaphore равен 0, дикарь будет ждать здесь.
 				_foodAvailableSemaphore.Wait(cancellationToken);
-
-				// Дикарь получил "разрешение" на еду, теперь нужно взять доступ к горшку
 				_potAccessSemaphore.Wait(cancellationToken);
 
-				// Теперь мы внутри критической секции (доступ к горшку).
-				// В этом месте _currentStews не может быть 0,
-				// потому что _foodAvailableSemaphore.Wait() уже прошел.
 				_currentStews--;
 				lock (_consoleLock)
 				{
@@ -108,11 +97,11 @@
 					if (_currentStews == 0) 
 					{
 						Console.WriteLine($"{Thread.CurrentThread.Name}: Горшок пуст. Бужу повара!");
-						_cookWakeUpSemaphore.Release(); // Разбудить повара
+						_cookWakeUpSemaphore.Release(); 
 					}
 				}
 
-				_potAccessSemaphore.Release(); // Освобождаем горшок
+				_potAccessSemaphore.Release(); 
 
 
 				Thread.Sleep(random.Next(500, 1500));
@@ -135,20 +124,14 @@
 		}
 	}
 
-	/// <summary>
-	/// Метод, моделирующий поведение повара.
-	/// </summary>
-	/// <param name="cancellationToken">Токен отмены для контролируемого завершения.</param>
 	private static void CookFood(CancellationToken cancellationToken)
 	{
-		Random random = new Random(Environment.TickCount + 100); // Разный seed
+		Random random = new Random(Environment.TickCount + 100); 
 
 		while (!cancellationToken.IsCancellationRequested)
 		{
 			try
 			{
-				// Повар ждет, пока его не разбудят дикари.
-				// _cookWakeUpSemaphore.Wait() будет блокироваться, пока дикарь не вызовет Release().
 				_cookWakeUpSemaphore.Wait(cancellationToken);
 
 				lock (_consoleLock)
@@ -165,9 +148,6 @@
 				}
 				_potAccessSemaphore.Release(); 
 
-				// Теперь, когда горшок наполнен, повар должен "разрешить" дикарям снова есть.
-				// Он должен вызвать _foodAvailableSemaphore.Release() _maxStews_ раз,
-				// чтобы все дикари, которые ждали на _foodAvailableSemaphore.Wait(), могли продолжить.
 				_foodAvailableSemaphore.Release(_maxStews);
 
 				lock (_consoleLock)
