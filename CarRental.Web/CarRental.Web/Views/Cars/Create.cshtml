@@ -1,0 +1,27 @@
+﻿@model CarRental.Web.Models.Models.Car
+@{
+    ViewData["Title"] = "Добавить автомобиль";
+}
+
+<h1>Добавить автомобиль</h1>
+
+<form asp-controller="Cars" asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="CarNumber" class="form-label"></label>
+        <input asp-for="CarNumber" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Make" class="form-label"></label>
+        <input asp-for="Make" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="PricePerHour" class="form-label"></label>
+        <input asp-for="PricePerHour" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a asp-controller="Cars" asp-action="Index" class="btn btn-secondary">Отмена</a>
+</form>

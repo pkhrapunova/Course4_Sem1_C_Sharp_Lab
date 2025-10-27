@@ -1,0 +1,37 @@
+﻿@model List<CarRental.Web.Models.Models.Car>
+@{
+    ViewData["Title"] = "Список автомобилей";
+}
+
+<h1>Список автомобилей</h1>
+
+<p>
+    <a asp-controller="Cars" asp-action="Create" class="btn btn-primary">Добавить новый автомобиль</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Номер</th>
+            <th>Марка</th>
+            <th>Статус</th>
+            <th>Цена/час</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var car in Model)
+        {
+            <tr>
+                <td>@car.CarNumber</td>
+                <td>@car.Make</td>
+                <td>@car.Status</td>
+                <td>@car.PricePerHour</td>
+                <td>
+                    <a asp-controller="Cars" asp-action="Edit" asp-route-id="@car.CarID" class="btn btn-sm btn-info">Изменить</a>
+                    <a asp-controller="Cars" asp-action="Delete" asp-route-id="@car.CarID" class="btn btn-sm btn-danger">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
