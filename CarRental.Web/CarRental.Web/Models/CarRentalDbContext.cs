@@ -1,23 +1,21 @@
-﻿using System.Data.Entity;
-using CarRental.Web.Models.Models;
+﻿using CarRental.Web.Models.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Web.Models
 {
 	public class CarRentalDbContext : DbContext
 	{
-		public CarRentalDbContext() : base("name=CarRentalDb")
-		{
-		}
+		public CarRentalDbContext(DbContextOptions<CarRentalDbContext> options)
+		   : base(options)
+		{ }
 
 		public DbSet<Car> Cars { get; set; }
 		public DbSet<Customer> Customers { get; set; }
 		public DbSet<Order> Orders { get; set; }
 
-		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			// -------------------------
 			// Car
-			// -------------------------
 			modelBuilder.Entity<Car>()
 				.HasKey(e => e.CarID);
 
@@ -40,9 +38,7 @@ namespace CarRental.Web.Models
 				.Property(e => e.PricePerHour)
 				.HasPrecision(18, 2);
 
-			// -------------------------
 			// Customer
-			// -------------------------
 			modelBuilder.Entity<Customer>()
 				.HasKey(e => e.CustomerID);
 
@@ -51,21 +47,19 @@ namespace CarRental.Web.Models
 				.IsRequired()
 				.HasMaxLength(100);
 
-			// -------------------------
 			// Order и связи
-			// -------------------------
 			modelBuilder.Entity<Order>()
 				.HasKey(e => e.OrderID);
 
 			// Один-ко-многим: Customer -> Orders
 			modelBuilder.Entity<Order>()
-				.HasRequired(o => o.Customer)
+				.HasOne(o=> o.Customer)
 				.WithMany(c => c.Orders)
 				.HasForeignKey(o => o.CustomerID);
 
 			// Один-ко-многим: Car -> Orders  
 			modelBuilder.Entity<Order>()
-				.HasRequired(o => o.Car)
+				.HasOne(o => o.Car)
 				.WithMany(c => c.Orders)
 				.HasForeignKey(o => o.CarID);
 

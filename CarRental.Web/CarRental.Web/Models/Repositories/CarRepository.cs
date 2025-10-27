@@ -1,16 +1,16 @@
-﻿using System.Data.Entity;
-using CarRental.Web.Models.Interfaces;
+﻿using CarRental.Web.Models.Interfaces;
 using CarRental.Web.Models.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Web.Models.Repositories
-{	
-	public class CarRepository : IRepository<Csar>
+{
+	public class CarRepository : IRepository<Car>
 	{
 		private readonly CarRentalDbContext _context;
 
-		public CarRepository()
+		public CarRepository(CarRentalDbContext context)
 		{
-			_context = new CarRentalDbContext();
+			_context = context;
 		}
 
 		public IEnumerable<Car> GetAll()
@@ -46,35 +46,24 @@ namespace CarRental.Web.Models.Repositories
 		}
 		public void Delete(int carId)
 		{
+			var car = _context.Cars.Find(carId);
+			if (car == null) return;
+
+			bool hasOrders = _context.Orders.Any(o => o.CarID == carId);
+			if (hasOrders)
+				throw new InvalidOperationException("Нельзя удалить автомобиль, так как у него есть заказы.");
+
 			try
 			{
-				var car = _context.Cars.Find(carId);
-				if (car != null)
-				{
-					bool hasOrders = _context.Orders.Any(o => o.CarID == carId);
-					if (hasOrders)
-					{
-						throw new Exception("Нельзя удалить автомобиль, так как у него есть заказы.");
-					}
-
-					_context.Cars.Remove(car);
-					_context.SaveChanges();
-				}
+				_context.Cars.Remove(car);
+				_context.SaveChanges();
 			}
-			catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+			catch (DbUpdateException ex) when (ex.InnerException?.Message?.Contains("REFERENCE") == true)
 			{
-				if (ex.InnerException?.Message?.Contains("REFERENCE") == true ||
-					ex.InnerException?.InnerException?.Message?.Contains("REFERENCE") == true)
-				{
-					throw new Exception("Нельзя удалить этот автомобиль, так как он связан с заказами.");
-				}
-				throw new Exception($"Ошибка при удалении автомобиля: {ex.Message}", ex);
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Ошибка при удалении автомобиля: {ex.Message}", ex);
+				throw new InvalidOperationException("Нельзя удалить этот автомобиль, так как он связан с заказами.", ex);
 			}
 		}
+
 		public IEnumerable<Car> GetAvailableCars()
 		{
 			return _context.Cars
@@ -93,7 +82,7 @@ namespace CarRental.Web.Models.Repositories
 		public Car GetById(int carId)
 		{
 			return _context.Cars
-				.Include(c => c.Orders) 
+				.Include(c => c.Orders)
 				.FirstOrDefault(c => c.CarID == carId);
 		}
 		public List<CarCurrentMonth> GetCarsCurrentMonth()

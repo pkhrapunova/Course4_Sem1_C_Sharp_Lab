@@ -1,6 +1,6 @@
 ﻿using CarRental.Web.Models.Interfaces;
 using CarRental.Web.Models.Models;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Web.Models.Repositories
 {
@@ -8,9 +8,9 @@ namespace CarRental.Web.Models.Repositories
 	{
 		private readonly CarRentalDbContext _context;
 
-		public CustomerRepository()
+		public CustomerRepository(CarRentalDbContext context)
 		{
-			_context = new CarRentalDbContext();
+			_context = context;
 		}
 		public IEnumerable<Customer> GetAll()
 		{
@@ -26,7 +26,7 @@ namespace CarRental.Web.Models.Repositories
 		public Customer GetById(int id)
 		{
 			return _context.Customers
-				.Include(c => c.Orders) 
+				.Include(c => c.Orders)
 				.FirstOrDefault(c => c.CustomerID == id);
 		}
 		public void Insert(Customer entity)
@@ -47,35 +47,23 @@ namespace CarRental.Web.Models.Repositories
 				throw new ArgumentException($"Клиент с ID {entity.CustomerID} не найден");
 			}
 		}
-		public void Delete(int id)
+		public void Delete(int customerId)
 		{
+			var customer = _context.Customers.Find(customerId);
+			if (customer == null) return;
+
+			bool hasOrders = _context.Orders.Any(o => o.CarID == customerId);
+			if (hasOrders)
+				throw new InvalidOperationException("Нельзя удалить.");
+
 			try
 			{
-				var customer = _context.Customers.Find(id);
-				if (customer != null)
-				{
-					bool hasOrders = _context.Orders.Any(o => o.CustomerID == id);
-					if (hasOrders)
-					{
-						throw new Exception("Нельзя удалить клиента, так как у него есть заказы.");
-					}
-
-					_context.Customers.Remove(customer);
-					_context.SaveChanges();
-				}
+				_context.Customers.Remove(customer);
+				_context.SaveChanges();
 			}
-			catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
+			catch (DbUpdateException ex) when (ex.InnerException?.Message?.Contains("REFERENCE") == true)
 			{
-				if (ex.InnerException?.Message?.Contains("REFERENCE") == true ||
-					ex.InnerException?.InnerException?.Message?.Contains("REFERENCE") == true)
-				{
-					throw new Exception("Нельзя удалить этого клиента, так как он связан с заказами.");
-				}
-				throw new Exception($"Ошибка при удалении клиента: {ex.Message}", ex);
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Ошибка при удалении клиента: {ex.Message}", ex);
+				throw new InvalidOperationException("Нельзя удалить.", ex);
 			}
 		}
 		public IEnumerable<dynamic> GetTopSpendingCustomers()

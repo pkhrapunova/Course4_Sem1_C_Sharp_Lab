@@ -1,6 +1,6 @@
-﻿using System.Data.Entity;
-using CarRental.Web.Models.Interfaces;
+﻿using CarRental.Web.Models.Interfaces;
 using CarRental.Web.Models.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Web.Models.Repositories
 {
@@ -8,9 +8,9 @@ namespace CarRental.Web.Models.Repositories
 	{
 		private readonly CarRentalDbContext _context;
 
-		public OrderRepository()
+		public OrderRepository(CarRentalDbContext context)
 		{
-			_context = new CarRentalDbContext();
+			_context = context;
 		}
 		public IEnumerable<Order> GetAll()
 		{
@@ -33,6 +33,7 @@ namespace CarRental.Web.Models.Repositories
 				.Include(o => o.Car)
 				.FirstOrDefault(o => o.OrderID == orderId);
 		}
+
 		public void Insert(Order order)
 		{
 			_context.Orders.Add(order);
