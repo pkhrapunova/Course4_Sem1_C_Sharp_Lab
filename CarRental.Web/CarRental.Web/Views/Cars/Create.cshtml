@@ -36,8 +36,10 @@
 
     <div class="form-group mb-3">
         <label asp-for="PricePerHour" class="form-label"></label>
-        <input asp-for="PricePerHour" class="form-control" />
+        <input asp-for="PricePerHour" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="PricePerHour" class="text-danger"></span>
     </div>
+
 
     <div class="form-group mb-3">
         <label asp-for="Photo" class="form-label"></label>
@@ -53,3 +55,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

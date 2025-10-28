@@ -22,7 +22,7 @@ namespace CarRental.Web.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CarRental.Web.Models.Models.Car", b =>
+            modelBuilder.Entity("CarRental.Web.Models.Car", b =>
                 {
                     b.Property<int>("CarID")
                         .ValueGeneratedOnAdd()
@@ -64,7 +64,7 @@ namespace CarRental.Web.Migrations
                     b.ToTable("Cars");
                 });
 
-            modelBuilder.Entity("CarRental.Web.Models.Models.Customer", b =>
+            modelBuilder.Entity("CarRental.Web.Models.Customer", b =>
                 {
                     b.Property<int>("CustomerID")
                         .ValueGeneratedOnAdd()
@@ -94,7 +94,7 @@ namespace CarRental.Web.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("CarRental.Web.Models.Models.Order", b =>
+            modelBuilder.Entity("CarRental.Web.Models.Order", b =>
                 {
                     b.Property<int>("OrderID")
                         .ValueGeneratedOnAdd()
@@ -123,15 +123,15 @@ namespace CarRental.Web.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("CarRental.Web.Models.Models.Order", b =>
+            modelBuilder.Entity("CarRental.Web.Models.Order", b =>
                 {
-                    b.HasOne("CarRental.Web.Models.Models.Car", "Car")
+                    b.HasOne("CarRental.Web.Models.Car", "Car")
                         .WithMany("Orders")
                         .HasForeignKey("CarID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CarRental.Web.Models.Models.Customer", "Customer")
+                    b.HasOne("CarRental.Web.Models.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -142,12 +142,12 @@ namespace CarRental.Web.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("CarRental.Web.Models.Models.Car", b =>
+            modelBuilder.Entity("CarRental.Web.Models.Car", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("CarRental.Web.Models.Models.Customer", b =>
+            modelBuilder.Entity("CarRental.Web.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
                 });

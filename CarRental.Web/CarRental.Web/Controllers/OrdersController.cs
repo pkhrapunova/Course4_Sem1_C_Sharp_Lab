@@ -15,12 +15,25 @@ namespace CarRental.Web.Controllers
         }
 
         // GET: Orders (просмотр всех заказов — для администратора)
+        //public async Task<IActionResult> Index()
+        //{
+        //    var orders = await _context.Orders
+        //        .Include(o => o.Car)
+        //        .Include(o => o.Customer)
+        //        .OrderByDescending(o => o.OrderDate)
+        //        .ToListAsync();
+
+        //    return View(orders);
+        //}
         public async Task<IActionResult> Index()
         {
+            int? customerId = HttpContext.Session.GetInt32("CustomerID");
+            if (customerId == null)
+                return RedirectToAction("Login", "Account");
+
             var orders = await _context.Orders
                 .Include(o => o.Car)
-                .Include(o => o.Customer)
-                .OrderByDescending(o => o.OrderDate)
+                .Where(o => o.CustomerID == customerId)
                 .ToListAsync();
 
             return View(orders);

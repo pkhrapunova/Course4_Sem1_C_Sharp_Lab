@@ -1,72 +1,34 @@
-﻿using CarRental.Web.Models;
+﻿using System.Globalization;
+using CarRental.Web.Models;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<CarRentalDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+var defaultCulture = new CultureInfo("ru-RU");
+var localizationOptions = new RequestLocalizationOptions
 {
-	app.UseHsts();
-}
+    DefaultRequestCulture = new RequestCulture(defaultCulture),
+    SupportedCultures = new List<CultureInfo> { defaultCulture },
+    SupportedUICultures = new List<CultureInfo> { defaultCulture }
+};
+
+app.UseRequestLocalization(localizationOptions);
 
 app.UseStaticFiles();
-
 app.UseRouting();
+app.UseSession();
 
 app.MapControllerRoute(
-	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-
-//CarRental.Web /
-//│
-//├── Controllers /
-//│   ├── HomeController.cs        // Главная страница, навигация
-//│   ├── CarsController.cs        // Управление каталогом машин
-//│   ├── OrdersController.cs      // Управление заказами
-//│   ├── AccountController.cs     // Авторизация и регистрация
-//│   └── AdminController.cs       // Админка (панель управления)
-//│
-//├── Models /
-//│   ├── Car.cs                   // Модель машины
-//│   ├── Customer.cs              // Модель клиента
-//│   ├── Order.cs                 // Модель заказа
-//│   └── CarRentalDbContext.cs    // Контекст БД (EF Core)
-//│
-//├── Views /
-//│   ├── Home /
-//│   │   └── Index.cshtml         // Главная страница
-//│   ├── Cars /
-//│   │   ├── Index.cshtml         // Список машин (каталог)
-//│   │   ├── Details.cshtml       // Подробности машины
-//│   │   ├── Create.cshtml        // Добавление (в админке)
-//│   │   ├── Edit.cshtml          // Редактирование (в админке)
-//│   │   └── Delete.cshtml        // Удаление (в админке)
-//│   ├── Orders /
-//│   │   ├── Index.cshtml         // Просмотр заказов пользователя
-//│   │   ├── Create.cshtml        // Оформление заказа
-//│   │   └── Confirm.cshtml       // Подтверждение заказа
-//│   ├── Account/
-//│   │   ├── Login.cshtml
-//│   │   └── Register.cshtml
-//│   └── Shared/
-//│       ├── _Layout.cshtml       // Общий шаблон (меню, футер)
-//│       └── _ValidationScriptsPartial.cshtml
-//│
-//├── wwwroot/
-//│   ├── css/
-//│   ├── js/
-//│   ├── images/
-//│   └── uploads/                 // Загруженные фото машин
-//│
-//├── appsettings.json             // Подключение к БД
-//├── Program.cs                   // Конфигурация приложения
-//└── CarRental.Web.csproj

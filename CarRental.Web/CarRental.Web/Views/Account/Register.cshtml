@@ -1,0 +1,35 @@
+﻿@model CarRental.Web.Models.Customer
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<h2 class="text-center">Регистрация клиента</h2>
+
+<form asp-action="Register" method="post" class="w-50 mx-auto mt-4">
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label"></label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Passport" class="form-label"></label>
+        <input asp-for="Passport" class="form-control" />
+        <span asp-validation-for="Passport" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DrivingLicense" class="form-label"></label>
+        <input asp-for="DrivingLicense" class="form-control" />
+        <span asp-validation-for="DrivingLicense" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Зарегистрироваться</button>
+</form>

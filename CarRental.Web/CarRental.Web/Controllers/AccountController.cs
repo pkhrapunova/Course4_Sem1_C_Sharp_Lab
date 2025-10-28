@@ -12,48 +12,57 @@ namespace CarRental.Web.Controllers
             _context = context;
         }
 
-        // GET: /Account/Login
-        public IActionResult Login() => View();
+        // GET: Account/Login
+        public IActionResult Login()
+        {
+            return View();
+        }
 
-        // POST: /Account/Login
+        // POST: Account/Login
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Login(string phone, string passport)
         {
             var customer = _context.Customers
                 .FirstOrDefault(c => c.Phone == phone && c.Passport == passport);
 
-            if (customer == null)
+            if (customer != null)
             {
-                ViewBag.Error = "Неверные данные для входа!";
-                return View();
+                // Сохраняем сессию
+                HttpContext.Session.SetInt32("CustomerID", customer.CustomerID);
+                HttpContext.Session.SetString("CustomerName", customer.FullName);
+
+                return RedirectToAction("Index", "Home");
             }
 
-            // Сохраняем ID пользователя в сессии (упрощённо)
-            HttpContext.Session.SetInt32("CustomerID", customer.CustomerID);
-            HttpContext.Session.SetString("CustomerName", customer.FullName);
-
-            return RedirectToAction("Index", "Home");
+            ModelState.AddModelError("", "Неверный телефон или серия паспорта");
+            return View();
         }
 
-        // GET: /Account/Register
-        public IActionResult Register() => View();
 
-        // POST: /Account/Register
+        // GET: Account/Register
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: Account/Register
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Register(Customer customer)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Customers.Add(customer);
-                _context.SaveChanges();
-                return RedirectToAction("Login");
-            }
-            return View(customer);
+            if (!ModelState.IsValid)
+                return View(customer);
+
+            _context.Customers.Add(customer);
+            _context.SaveChanges();
+
+            return RedirectToAction("Login");
         }
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            HttpContext.Session.Clear(); // удаляем данные сессии
             return RedirectToAction("Index", "Home");
         }
     }

@@ -43,5 +43,10 @@ namespace CarRental.Web.Models
 		public string? PhotoBase64 => Photo != null ? Convert.ToBase64String(Photo) : null;
 
 		public virtual ICollection<Order> Orders { get; set; }
-	}
+
+        public Car()
+        {
+            Orders = new HashSet<Order>();
+        }
+    }
 }
