@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CarRental.Web.Models.Models
+namespace CarRental.Web.Models
 {
 	[Table("Cars")]
 	public class Car

@@ -1,0 +1,48 @@
+﻿@model CarRental.Web.Models.Car
+
+@{
+    ViewData["Title"] = "Информация об автомобиле";
+}
+
+<h2>Информация об автомобиле</h2>
+
+<div class="card p-3">
+    <div class="row">
+        <div class="col-md-4">
+            @if (Model.PhotoBase64 != null)
+            {
+                <img src="data:image/png;base64,@Model.PhotoBase64" class="img-fluid rounded" />
+            }
+            else
+            {
+                <p class="text-muted">Фото отсутствует</p>
+            }
+        </div>
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-4">Номер:</dt>
+                <dd class="col-sm-8">@Model.CarNumber</dd>
+
+                <dt class="col-sm-4">Марка:</dt>
+                <dd class="col-sm-8">@Model.Make</dd>
+
+                <dt class="col-sm-4">Пробег:</dt>
+                <dd class="col-sm-8">@Model.Mileage км</dd>
+
+                <dt class="col-sm-4">Статус:</dt>
+                <dd class="col-sm-8">@Model.Status</dd>
+
+                <dt class="col-sm-4">Места:</dt>
+                <dd class="col-sm-8">@Model.Seats</dd>
+
+                <dt class="col-sm-4">Цена/час:</dt>
+                <dd class="col-sm-8">@Model.PricePerHour ₽</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<p class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.CarID" class="btn btn-warning">Редактировать</a>
+    <a asp-action="Index" class="btn btn-secondary">Назад к списку</a>
+</p>
