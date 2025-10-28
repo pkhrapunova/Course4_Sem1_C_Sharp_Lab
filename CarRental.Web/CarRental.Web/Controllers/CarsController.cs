@@ -15,6 +15,13 @@ namespace CarRental.Web.Controllers
             _context = context;
         }
 
+        // Метод проверки: является ли текущий пользователь админом
+        private bool IsAdmin()
+        {
+            var isAdmin = HttpContext.Session.GetString("IsAdmin");
+            return isAdmin == "true";
+        }
+
         // GET: Cars
         public async Task<IActionResult> Index()
         {
@@ -28,17 +35,19 @@ namespace CarRental.Web.Controllers
             if (id == null)
                 return NotFound();
 
-            var car = await _context.Cars
-                .FirstOrDefaultAsync(m => m.CarID == id);
+            var car = await _context.Cars.FirstOrDefaultAsync(m => m.CarID == id);
             if (car == null)
                 return NotFound();
 
             return View(car);
         }
 
-        // GET: Cars/Create
+        // GET: Cars/Create (только админ)
         public IActionResult Create()
         {
+            if (!IsAdmin())
+                return Forbid(); // запрет доступа обычным пользователям
+
             return View();
         }
 
@@ -47,22 +56,16 @@ namespace CarRental.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Car car, IFormFile? photoFile)
         {
-            if (!ModelState.IsValid)
-            {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine("Ошибка валидации: " + error.ErrorMessage);
-                }
-            }
+            if (!IsAdmin())
+                return Forbid();
+
             if (ModelState.IsValid)
             {
                 if (photoFile != null && photoFile.Length > 0)
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        await photoFile.CopyToAsync(ms);
-                        car.Photo = ms.ToArray();
-                    }
+                    using var ms = new MemoryStream();
+                    await photoFile.CopyToAsync(ms);
+                    car.Photo = ms.ToArray();
                 }
 
                 _context.Cars.Add(car);
@@ -73,10 +76,12 @@ namespace CarRental.Web.Controllers
             return View(car);
         }
 
-
         // GET: Cars/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            if (!IsAdmin())
+                return Forbid();
+
             if (id == null)
                 return NotFound();
 
@@ -92,17 +97,11 @@ namespace CarRental.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Car car, IFormFile? photoFile)
         {
+            if (!IsAdmin())
+                return Forbid();
+
             if (id != car.CarID)
                 return NotFound();
-
-            // 🩵 Добавим это, чтобы видеть ошибки
-            if (!ModelState.IsValid)
-            {
-                foreach (var e in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine($"Ошибка: {e.ErrorMessage}");
-                }
-            }
 
             if (photoFile != null && photoFile.Length > 0)
             {
@@ -136,31 +135,30 @@ namespace CarRental.Web.Controllers
             return View(car);
         }
 
-
         // GET: Cars/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            if (!IsAdmin())
+                return Forbid();
+
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var car = await _context.Cars
-                .FirstOrDefaultAsync(m => m.CarID == id);
-
+            var car = await _context.Cars.FirstOrDefaultAsync(m => m.CarID == id);
             if (car == null)
-            {
                 return NotFound();
-            }
 
             return View(car);
         }
 
         // POST: Cars/DeleteConfirmed/5
-        [HttpPost, ActionName("DeleteConfirmed")]  // 👈 важно имя!
+        [HttpPost, ActionName("DeleteConfirmed")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!IsAdmin())
+                return Forbid();
+
             var car = await _context.Cars.FindAsync(id);
             if (car != null)
             {

@@ -28,9 +28,9 @@ namespace CarRental.Web.Controllers
 
             if (customer != null)
             {
-                // Сохраняем сессию
                 HttpContext.Session.SetInt32("CustomerID", customer.CustomerID);
                 HttpContext.Session.SetString("CustomerName", customer.FullName);
+                HttpContext.Session.SetString("IsAdmin", customer.IsAdmin ? "true" : "false");
 
                 return RedirectToAction("Index", "Home");
             }
@@ -38,6 +38,7 @@ namespace CarRental.Web.Controllers
             ModelState.AddModelError("", "Неверный телефон или серия паспорта");
             return View();
         }
+
 
 
         // GET: Account/Register
@@ -54,6 +55,7 @@ namespace CarRental.Web.Controllers
             if (!ModelState.IsValid)
                 return View(customer);
 
+            customer.IsAdmin = false; // обязательно
             _context.Customers.Add(customer);
             _context.SaveChanges();
 

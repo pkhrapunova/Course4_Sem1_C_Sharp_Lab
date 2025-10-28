@@ -29,6 +29,8 @@ namespace CarRental.Web.Models
         public string DrivingLicense { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        [Display(Name = "Администратор")]
+        public bool IsAdmin { get; set; } = false; // по умолчанию обычный пользователь
 
     }
 }

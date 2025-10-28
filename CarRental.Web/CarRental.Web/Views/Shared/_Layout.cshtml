@@ -31,7 +31,7 @@
                         @if (Context.Session.GetInt32("CustomerID") != null)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Выйти</a>
+                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Выйти (@Context.Session.GetString("CustomerName"))</a>
                             </li>
                         }
                         else
@@ -44,6 +44,7 @@
                             </li>
                         }
                     </ul>
+
                 </div>
             </div>
         </nav>
