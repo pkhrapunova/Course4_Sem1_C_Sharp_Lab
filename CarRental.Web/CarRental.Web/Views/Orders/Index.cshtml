@@ -1,0 +1,29 @@
+﻿@model IEnumerable<CarRental.Web.Models.Order>
+
+@{
+    ViewData["Title"] = "Список заказов";
+}
+
+<h1 class="mb-3">Список заказов</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Клиент</th>
+            <th>Автомобиль</th>
+            <th>Дата заказа</th>
+            <th>Часы аренды</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Customer.FullName</td>
+                <td>@order.Car.Make</td>
+                <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@order.Hours</td>
+            </tr>
+        }
+    </tbody>
+</table>

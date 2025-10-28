@@ -14,19 +14,19 @@ namespace CarRental.Web.Controllers
             _context = context;
         }
 
-        // GET: Orders (для администратора)
+        // GET: Orders (просмотр всех заказов — для администратора)
         public async Task<IActionResult> Index()
         {
-            var orders = _context.Orders
+            var orders = await _context.Orders
                 .Include(o => o.Car)
                 .Include(o => o.Customer)
-                .OrderByDescending(o => o.OrderDate);
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
 
-            return View(await orders.ToListAsync());
+            return View(orders);
         }
 
-        // GET: Orders/Create
-        // форма оформления заказа (пользователь выбирает машину)
+        // GET: Orders/Create (оформление заказа)
         public IActionResult Create(int? carId)
         {
             ViewData["CarID"] = new SelectList(_context.Cars, "CarID", "Make", carId);
@@ -42,19 +42,11 @@ namespace CarRental.Web.Controllers
             if (ModelState.IsValid)
             {
                 order.OrderDate = DateTime.Now;
-                _context.Add(order);
+                _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
 
-                // при желании можно обновить статус машины на "Забронирована"
-                var car = await _context.Cars.FindAsync(order.CarID);
-                if (car != null)
-                {
-                    car.Status = "Забронирована";
-                    _context.Update(car);
-                    await _context.SaveChangesAsync();
-                }
-
-                return RedirectToAction("Index", "Cars");
+                // переход на страницу подтверждения
+                return RedirectToAction(nameof(Confirm), new { id = order.OrderID });
             }
 
             ViewData["CarID"] = new SelectList(_context.Cars, "CarID", "Make", order.CarID);
@@ -62,80 +54,18 @@ namespace CarRental.Web.Controllers
             return View(order);
         }
 
-        // GET: Orders/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Orders/Confirm/id (страница подтверждения)
+        public async Task<IActionResult> Confirm(int id)
         {
-            if (id == null) return NotFound();
-
             var order = await _context.Orders
                 .Include(o => o.Car)
                 .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.OrderID == id);
+                .FirstOrDefaultAsync(o => o.OrderID == id);
 
-            if (order == null) return NotFound();
-
-            return View(order);
-        }
-
-        // GET: Orders/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null) return NotFound();
-
-            ViewData["CarID"] = new SelectList(_context.Cars, "CarID", "Make", order.CarID);
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "CustomerID", "FullName", order.CustomerID);
-            return View(order);
-        }
-
-        // POST: Orders/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Order order)
-        {
-            if (id != order.OrderID) return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                _context.Update(order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["CarID"] = new SelectList(_context.Cars, "CarID", "Make", order.CarID);
-            ViewData["CustomerID"] = new SelectList(_context.Customers, "CustomerID", "FullName", order.CustomerID);
-            return View(order);
-        }
-
-        // GET: Orders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var order = await _context.Orders
-                .Include(o => o.Car)
-                .Include(o => o.Customer)
-                .FirstOrDefaultAsync(m => m.OrderID == id);
-
-            if (order == null) return NotFound();
+            if (order == null)
+                return NotFound();
 
             return View(order);
-        }
-
-        // POST: Orders/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var order = await _context.Orders.FindAsync(id);
-            if (order != null)
-            {
-                _context.Orders.Remove(order);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -1,12 +1,14 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Главная страница";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Добро пожаловать!</h1>
-    <p>Время выбрать автомобиль</p>
+<div class="text-center mt-5">
+    <h1 class="display-4 mb-3">Добро пожаловать в CarRental!</h1>
+    <p class="lead mb-4">Выберите автомобиль для аренды прямо сейчас 🚗</p>
 
     <p>
-        <a class="btn btn-primary btn-lg" asp-controller="Cars" asp-action="Index">Смотреть автомобили</a>
+        <a class="btn btn-primary btn-lg" asp-controller="Cars" asp-action="Index">
+            Смотреть автомобили
+        </a>
     </p>
 </div>

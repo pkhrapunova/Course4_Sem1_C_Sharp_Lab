@@ -1,0 +1,19 @@
+﻿@model CarRental.Web.Models.Order
+
+@{
+    ViewData["Title"] = "Подтверждение заказа";
+}
+
+<h1>Заказ успешно оформлен!</h1>
+
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">Информация о заказе</h5>
+        <p><strong>Клиент:</strong> @Model.Customer.FullName</p>
+        <p><strong>Автомобиль:</strong> @Model.Car.Make (@Model.Car.CarNumber)</p>
+        <p><strong>Дата заказа:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</p>
+        <p><strong>Часы аренды:</strong> @Model.Hours</p>
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-primary mt-3">Перейти к списку заказов</a>

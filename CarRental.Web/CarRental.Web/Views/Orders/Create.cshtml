@@ -1,0 +1,34 @@
+﻿@model CarRental.Web.Models.Order
+
+@{
+    ViewData["Title"] = "Оформление заказа";
+}
+
+<h1>Оформить заказ</h1>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="CustomerID" class="form-label"></label>
+        <select asp-for="CustomerID" class="form-select" asp-items="ViewBag.CustomerID"></select>
+        <span asp-validation-for="CustomerID" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CarID" class="form-label"></label>
+        <select asp-for="CarID" class="form-select" asp-items="ViewBag.CarID"></select>
+        <span asp-validation-for="CarID" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Hours" class="form-label"></label>
+        <input asp-for="Hours" class="form-control" />
+        <span asp-validation-for="Hours" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Оформить заказ</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
