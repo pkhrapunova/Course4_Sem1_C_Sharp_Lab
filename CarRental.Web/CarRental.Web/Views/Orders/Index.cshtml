@@ -2,14 +2,24 @@
 
 @{
     ViewData["Title"] = "Список заказов";
+    bool isAdmin = Context.Session.GetString("IsAdmin") == "true";
 }
 
 <h1 class="mb-3">Список заказов</h1>
 
+<p>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Добавить заказ
+    </a>
+</p>
+
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Клиент</th>
+            @if (isAdmin)
+            {
+                <th>Клиент</th>
+            }
             <th>Автомобиль</th>
             <th>Дата заказа</th>
             <th>Часы аренды</th>
@@ -19,9 +29,12 @@
         @foreach (var order in Model)
         {
             <tr>
-                <td>@order.Customer.FullName</td>
-                <td>@order.Car.Make</td>
-                <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                @if (isAdmin)
+                {
+                    <td>@order.Customer?.FullName</td>
+                }
+                <td>@order.Car?.Make</td>
+                <td>@order.OrderDate.ToString("dd.MM.yyyy")</td>
                 <td>@order.Hours</td>
             </tr>
         }

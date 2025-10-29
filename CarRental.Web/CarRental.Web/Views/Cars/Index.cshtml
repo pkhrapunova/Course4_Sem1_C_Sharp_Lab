@@ -2,10 +2,12 @@
 
 @{
     ViewData["Title"] = "Список автомобилей";
+    bool isAdmin = Context.Session.GetString("IsAdmin") == "true";
 }
 
 <h2 class="mb-4 text-center">Список автомобилей</h2>
-@if (Context.Session.GetString("IsAdmin") == "true")
+
+@if (isAdmin)
 {
     <p>
         <a asp-action="Create" class="btn btn-primary">
@@ -13,6 +15,7 @@
         </a>
     </p>
 }
+
 <table class="table table-striped table-bordered align-middle">
     <thead class="table-dark text-center">
         <tr>
@@ -31,42 +34,46 @@
         {
             foreach (var car in Model)
             {
-                        <tr class="text-center">
-                            <td style="width:150px">
+                <tr class="text-center">
+                    <td style="width:150px">
                         @if (car.PhotoBase64 != null)
                         {
-                                        <img src="data:image/png;base64,@car.PhotoBase64" alt="Фото" class="img-thumbnail" width="100" />
+                            <img src="data:image/png;base64,@car.PhotoBase64" alt="Фото" class="img-thumbnail" width="100" />
                         }
                         else
                         {
-                                        <span class="text-muted">Нет фото</span>
+                            <span class="text-muted">Нет фото</span>
                         }
-                            </td>
-                            <td>@car.CarNumber</td>
-                            <td>@car.Make</td>
-                            <td>@car.Mileage км</td>
-                            <td>@car.Status</td>
-                            <td>@car.Seats</td>
-                            <td>@car.PricePerHour.ToString("0.00")</td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@car.CarID" class="btn btn-sm btn-info">
-                                    <i class="bi bi-eye"></i> Просмотр
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@car.CarID" class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil"></i> Изменить
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@car.CarID" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i> Удалить
-                                </a>
-                            </td>
-                        </tr>
+                    </td>
+                    <td>@car.CarNumber</td>
+                    <td>@car.Make</td>
+                    <td>@car.Mileage км</td>
+                    <td>@car.Status</td>
+                    <td>@car.Seats</td>
+                    <td>@car.PricePerHour.ToString("0.00")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@car.CarID" class="btn btn-sm btn-info">
+                            <i class="bi bi-eye"></i> Просмотр
+                        </a>
+
+                        @if (isAdmin)
+                        {
+                            <a asp-action="Edit" asp-route-id="@car.CarID" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i> Изменить
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@car.CarID" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Удалить
+                            </a>
+                        }
+                    </td>
+                </tr>
             }
         }
         else
         {
-                <tr>
-                    <td colspan="8" class="text-center text-muted">Автомобили отсутствуют</td>
-                </tr>
+            <tr>
+                <td colspan="8" class="text-center text-muted">Автомобили отсутствуют</td>
+            </tr>
         }
     </tbody>
 </table>

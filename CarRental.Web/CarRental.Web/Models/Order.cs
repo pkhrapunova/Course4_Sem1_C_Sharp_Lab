@@ -12,20 +12,21 @@ namespace CarRental.Web.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderID { get; set; }
 
-        [Required]
         [ForeignKey("Customer")]
         public int CustomerID { get; set; }
 
-        [Required]
         [ForeignKey("Car")]
         public int CarID { get; set; }
+
+        [Required(ErrorMessage = "Выберите дату и время бронирования")]
         public DateTime OrderDate { get; set; }
+
+        [Required]
+        [Range(1, 24, ErrorMessage = "Введите корректное количество часов")]
         public int Hours { get; set; }
 
-        public virtual Customer Customer { get; set; }
-        public virtual Car Car { get; set; }
-        public Order()
-        {
-        }
+        public virtual Car? Car { get; set; }
+        public virtual Customer? Customer { get; set; }
+
     }
 }

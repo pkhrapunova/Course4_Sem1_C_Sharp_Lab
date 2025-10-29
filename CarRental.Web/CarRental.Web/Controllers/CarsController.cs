@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CarRental.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CarRental.Web.Models;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace CarRental.Web.Controllers
 {
@@ -15,43 +13,35 @@ namespace CarRental.Web.Controllers
             _context = context;
         }
 
-        // Метод проверки: является ли текущий пользователь админом
-        private bool IsAdmin()
-        {
-            var isAdmin = HttpContext.Session.GetString("IsAdmin");
-            return isAdmin == "true";
-        }
-
         // GET: Cars
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var cars = await _context.Cars.ToListAsync();
-            return View(cars);
+            return View(_context.Cars.ToList());
         }
 
         // GET: Cars/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
-            if (id == null)
-                return NotFound();
+            if (id == null) return NotFound();
 
-            var car = await _context.Cars.FirstOrDefaultAsync(m => m.CarID == id);
-            if (car == null)
-                return NotFound();
+            var car = _context.Cars.FirstOrDefault(m => m.CarID == id);
+            if (car == null) return NotFound();
 
             return View(car);
         }
 
-        // GET: Cars/Create (только админ)
+        private bool IsAdmin()
+        {
+            return HttpContext.Session.GetString("IsAdmin") == "true";
+        }
+
+        // GET: Cars/Create
         public IActionResult Create()
         {
-            if (!IsAdmin())
-                return Forbid(); // запрет доступа обычным пользователям
-
+            if (!IsAdmin()) return RedirectToAction("Index");
             return View();
         }
 
-        // POST: Cars/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Car car, IFormFile? photoFile)
@@ -79,20 +69,15 @@ namespace CarRental.Web.Controllers
         // GET: Cars/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!IsAdmin())
-                return Forbid();
-
-            if (id == null)
-                return NotFound();
+            if (!IsAdmin()) return RedirectToAction("Index");
+            if (id == null) return NotFound();
 
             var car = await _context.Cars.FindAsync(id);
-            if (car == null)
-                return NotFound();
+            if (car == null) return NotFound();
 
             return View(car);
         }
 
-        // POST: Cars/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Car car, IFormFile? photoFile)
@@ -136,35 +121,30 @@ namespace CarRental.Web.Controllers
         }
 
         // GET: Cars/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
-            if (!IsAdmin())
-                return Forbid();
+            if (!IsAdmin()) return RedirectToAction("Index");
+            if (id == null) return NotFound();
 
-            if (id == null)
-                return NotFound();
-
-            var car = await _context.Cars.FirstOrDefaultAsync(m => m.CarID == id);
-            if (car == null)
-                return NotFound();
+            var car = _context.Cars.FirstOrDefault(m => m.CarID == id);
+            if (car == null) return NotFound();
 
             return View(car);
         }
 
-        // POST: Cars/DeleteConfirmed/5
-        [HttpPost, ActionName("DeleteConfirmed")]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            if (!IsAdmin())
-                return Forbid();
+            if (!IsAdmin()) return RedirectToAction("Index");
 
-            var car = await _context.Cars.FindAsync(id);
+            var car = _context.Cars.Find(id);
             if (car != null)
             {
                 _context.Cars.Remove(car);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
+
             return RedirectToAction(nameof(Index));
         }
     }
