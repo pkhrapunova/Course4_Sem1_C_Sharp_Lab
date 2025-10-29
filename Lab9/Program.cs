@@ -144,7 +144,7 @@
 				_currentStews = _maxStews;
 				lock (_consoleLock)
 				{
-					Console.WriteLine($"{Thread.CurrentThread.Name} : Наполнил горшок. Теперь ");
+					Console.WriteLine($"{Thread.CurrentThread.Name} : Наполнил горшок ");
 				}
 				_potAccessSemaphore.Release(); 
 
